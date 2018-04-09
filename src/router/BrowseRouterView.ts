@@ -1,7 +1,6 @@
 import * as React from "react";
 import {RouterView, RouterViewProps} from "./RouterView";
-import {Action, History, Location} from "history";
-import {parse, stringify} from "querystring";
+import {stringify} from "querystring";
 import ApiRequestResolver from "../resolve/ApiRequestResolver";
 import {ActionResolver} from "../resolve/ActionResolver";
 import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactory";
@@ -9,16 +8,16 @@ import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactor
 let browserNavigator = null;
 
 /**
- * 默认路由视图
+ * 浏览器路由视图
  */
-export abstract class DefaultRouterView<P extends RouterViewProps, S> extends React.Component<P, S> implements RouterView<P> {
+export abstract class BrowseRouterView<P extends RouterViewProps, S> extends React.Component<P, S> implements RouterView<P> {
 
 
     //请求解析器
     protected requestResolver: ActionResolver;
 
 
-    constructor(props, context) {
+    constructor(props: P, context: any) {
         super(props, context);
         //浏览器导航器
         if (browserNavigator === null) {
