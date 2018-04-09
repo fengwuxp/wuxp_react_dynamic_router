@@ -10,6 +10,7 @@ import UnifiedExceptionHandler from "../handler/execption/UnifiedExceptionHandle
 import WebReactRouteHandler from "../handler/action/WebReactRouteHandler";
 import {ExceptionHandler} from "../handler/execption/ExceptionHandler";
 import {History} from "history";
+import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactory";
 
 
 /**
@@ -70,7 +71,10 @@ export abstract class AbstractActionResolver implements ActionResolver {
     protected routeHandler: ActionHandler;
 
 
-    constructor(navigator: History, handlerMap?: Map<string, ActionHandler>) {
+    constructor(navigator?: History, handlerMap?: Map<string, ActionHandler>) {
+        if (isNullOrUndefined(navigator)) {
+            navigator = browserNavigatorFactory.get();
+        }
         initHandler(navigator, handlerMap);
         this.routeHandler = HANDLER_MAP.get(ROUTE_VIEW_HANDLER_NAME);
         this.exceptionHandler = <ExceptionHandler>HANDLER_MAP.get(EXCEPTION_HANDLER_NAME);
@@ -135,7 +139,7 @@ export abstract class AbstractActionResolver implements ActionResolver {
 
         if (isNullOrUndefined(type) || type.length === 0 || type === "view") {
             //视图处理
-            this.routeHandler.handle(action,data);
+            this.routeHandler.handle(action, data);
 
         } else if (type === "action") {
             //TODO 操作处理

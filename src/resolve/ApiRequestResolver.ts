@@ -13,8 +13,8 @@ const apiClientFetch = new ApiClientFetch(false);
 export default class ApiRequestResolver extends AbstractActionResolver {
 
 
-    constructor(browserNavigator: History) {
-        super(browserNavigator);
+    constructor() {
+        super();
     }
 
     /**

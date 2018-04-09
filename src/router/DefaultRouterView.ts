@@ -24,7 +24,7 @@ export abstract class DefaultRouterView<P extends RouterViewProps, S> extends Re
         if (browserNavigator === null) {
             browserNavigator = browserNavigatorFactory.get();
         }
-        this.requestResolver = new ApiRequestResolver(browserNavigator);
+        this.requestResolver = new ApiRequestResolver();
     }
 
     back = (event: React.MouseEvent<HTMLElement>) => {
