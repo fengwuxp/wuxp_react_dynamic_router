@@ -3,5 +3,7 @@
  */
 export interface Factory {
 
-    factory: <T>(...arguments) => T;
+    factory:(...params) => any;
+
+    get:(...params) => any;
 }

@@ -3,8 +3,7 @@
  */
 import {Handler} from "../Handler";
 
-export interface ActionHandler extends Handler{
+export interface ActionHandler extends Handler {
 
-    // execute: (...arguments) => void;
 
 }

@@ -7,7 +7,7 @@ import {ActionResolver} from "../resolve/ActionResolver";
 import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactory";
 
 //浏览器导航器
-const browserNavigator: History = browserNavigatorFactory.factory();
+const browserNavigator: History = browserNavigatorFactory.get();
 
 /**
  * 默认路由视图
@@ -20,6 +20,7 @@ export abstract class DefaultRouterView<P extends RouterViewProps, S> extends Re
 
 
     constructor(props, context) {
+        super(props,context);
         this.requestResolver = new ApiRequestResolver();
     }
 
@@ -41,13 +42,5 @@ export abstract class DefaultRouterView<P extends RouterViewProps, S> extends Re
         }
     };
 
-
-    routerListen = (p?: any) => {
-        // browserNavigator.listen((location: Location, action: Action) => {
-        //     //解析url参数
-        //     let str = location.search.split("?")[1] || '';
-        //     const queryParams = parse(str);
-        // });
-    };
 
 }

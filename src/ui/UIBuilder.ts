@@ -8,8 +8,8 @@ export interface UIBuilder {
 
     /**
      * 加入一个组件到视图中
-     * @param arguments
+     * @param params
      * @returns {React.ReactNode}
      */
-    appendComponent: (...arguments) => React.ReactNode;
+    appendComponent: (...params) => React.ReactNode;
 }

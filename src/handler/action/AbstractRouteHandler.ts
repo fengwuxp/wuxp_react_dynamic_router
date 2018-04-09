@@ -10,33 +10,33 @@ import {stringify} from "querystring";
 export default abstract class AbstractRouteHandler implements ActionHandler {
 
 
-    protected abstract handle: (...arguments) => void;
+    abstract handle: (...params) => void;
 
     /**
      * 提示
      */
-    protected abstract toast: (...arguments) => void;
+    protected abstract toast: (...params) => void;
 
     /**
      * 通知
      */
-    protected abstract notice: (...arguments) => void;
+    protected abstract notice: (...params) => void;
 
     /**
      * 警告
      */
-    protected abstract alter: (...arguments) => void;
+    protected abstract alter: (...params) => void;
 
     /**
      * 确认
      */
-    protected abstract confirm: (...arguments) => void;
+    protected abstract confirm: (...params) => void;
 
 
     /**
      * 跳转
      */
-    protected abstract jump: (...arguments) => void;
+    protected abstract jump: (...params) => void;
 
 
     protected route = (action: ActionConfig, data: any): void => {
@@ -44,7 +44,7 @@ export default abstract class AbstractRouteHandler implements ActionHandler {
         const {value, params, promptData, desc} = action;
 
         if (isUndefined(data)) {
-            this.jump(value, params, data)
+            this.jump(value, params);
         } else {
             const {type} = promptData;
             this[type.toString().toLowerCase()](action, data);

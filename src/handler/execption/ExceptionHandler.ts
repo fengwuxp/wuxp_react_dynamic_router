@@ -3,7 +3,7 @@ import {Handler} from "../Handler";
 /**
  * 异常处理器
  */
-export abstract class ExceptionHandler extends Handler {
+export abstract class ExceptionHandler implements Handler {
 
     handle = (e: any): void => {
 

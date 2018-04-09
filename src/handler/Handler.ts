@@ -1,6 +1,7 @@
-
-
+/**
+ * 处理器
+ */
 export interface Handler {
 
-    handle:(...arguments)=>void;
+    handle:(...params)=>void;
 }

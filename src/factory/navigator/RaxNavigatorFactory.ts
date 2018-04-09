@@ -6,7 +6,10 @@ import {NavigatorFactory} from "./NavigatorFactory";
  */
 export default class RaxNavigatorFactory implements NavigatorFactory{
 
-    factory: <T>(...arguments) => T;
+    factory:(...params) => any;
+
+    get: (...params) => any;
+
 
 
 }

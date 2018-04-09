@@ -9,13 +9,12 @@ let browserHistory: History = null;
  */
 class BrowseRNavigatorFactory implements NavigatorFactory {
 
-
     /**
      * 生成一个
      * @param {BrowserHistoryBuildOptions} options
      * @returns {any}
      */
-    factory = <History>(options: BrowserHistoryBuildOptions = {
+    factory = (options: BrowserHistoryBuildOptions = {
         basename: process.env.BASE_NAME
     }) => {
         if (browserHistory !== null) {
@@ -26,6 +25,12 @@ class BrowseRNavigatorFactory implements NavigatorFactory {
 
         return browserHistory;
     };
+
+    get = (): History => {
+        return browserHistory;
+    };
+
+
 }
 
 export default new BrowseRNavigatorFactory();

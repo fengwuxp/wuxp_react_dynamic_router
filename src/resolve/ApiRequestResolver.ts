@@ -29,7 +29,7 @@ export default class ApiRequestResolver extends AbstractActionResolver {
             data: prams,
             dataType: DataType.JSON
         }).then((resp: ActionResp<any>) => {
-            this.dispatchResp(resp);
+            this.dispatchRespHandle(resp,request,prams);
         }).catch((e) => {
             this.exceptionHandler.handle(e)
         });
@@ -38,7 +38,8 @@ export default class ApiRequestResolver extends AbstractActionResolver {
     };
 
     protected doFailure = (resp: ActionResp<any>): void => {
-
+        console.log("业务逻辑错误-->");
+        console.log(resp);
     };
 
 

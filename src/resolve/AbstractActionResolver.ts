@@ -35,16 +35,17 @@ let HANDLER_MAP: Map<string, Handler> = null;
  * @param {History} navigator
  * @param {Map<string, ActionHandler>} handlerMap
  */
-const initHandler = (navigator: History, handlerMap?: Map<string, ActionHandler>) => {
+const initHandler = (navigator: History, handlerMap?: Map<string, Handler>) => {
     if (isNullOrUndefined(handlerMap)) {
 
         //从工厂中获取handler
         const map: Map<string, ActionHandler> = require("../factory/handler/ActionHandlerFactoy").default;
 
         //设置默认的handler
-        const webReactRouteHandler = new WebReactRouteHandler(navigator);
-        this.HANDLER_MAP.set(ROUTE_VIEW_HANDLER_NAME, webReactRouteHandler);
-        this.HANDLER_MAP.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler());
+        //路由处理
+        map.set(ROUTE_VIEW_HANDLER_NAME, new WebReactRouteHandler(navigator));
+        //异常粗了
+        map.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler(navigator));
         HANDLER_MAP = map;
     } else {
         HANDLER_MAP = handlerMap;
@@ -54,7 +55,7 @@ const initHandler = (navigator: History, handlerMap?: Map<string, ActionHandler>
 /**
  * 抽象的动作解析
  */
-export abstract class AbstractActionResolver implements ActionResolver<any> {
+export abstract class AbstractActionResolver implements ActionResolver {
 
     /**
      * 异常处理器
@@ -69,8 +70,8 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
 
     constructor(navigator: History, handlerMap?: Map<string, ActionHandler>) {
         initHandler(navigator, handlerMap);
-        this.routeHandler = handlerMap.get(ROUTE_VIEW_HANDLER_NAME);
-        this.exceptionHandler = handlerMap.get(EXCEPTION_HANDLER_NAME);
+        this.routeHandler = HANDLER_MAP.get(ROUTE_VIEW_HANDLER_NAME);
+        this.exceptionHandler = <ExceptionHandler>HANDLER_MAP.get(EXCEPTION_HANDLER_NAME);
     }
 
     /**
@@ -78,29 +79,44 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
      * @param {ActionResp<any>} resp
      * @returns {Promise<any>}
      */
-    abstract resolve: (...arguments) => void;
+    abstract resolve: (...params) => void;
 
     /**
      * 失败处理
      */
-    protected abstract doFailure: (...arguments) => void;
+    protected abstract doFailure: (...params) => void;
 
 
-    protected dispatchResp(resp: ActionResp<any>) {
+    /**
+     * 分发结果处理
+     * @param {ActionResp<any>} resp
+     * @param {string} request
+     * @param prams
+     */
+    protected dispatchRespHandle(resp: ActionResp<any>, request: string, prams: any) {
         const {actions, data, success} = resp;
         if (!success) {
             //处理失败
-            this.doFailure(resp)
+            this.doFailure(resp);
+            return;
+        }
+
+        let length: number = actions.length;
+
+        if (length === 0) {
+            //没有任何动作，直接跳转
+            this.routeHandler.handle({
+                value: request,
+                prams
+            });
+
+        } else if (length === 1) {
+            //有一个
+            this.handleAction(actions[0], data);
         } else {
-            let length = actions.length;
+            //多个
+            console.log("有多个动作需要处理");
 
-            if (length === 0) {
-
-            } else if (length === 1) {
-
-            } else {
-
-            }
         }
     }
 
@@ -120,9 +136,16 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
             this.routeHandler.handle(action, data);
 
         } else if (type === "action") {
-            //操作处理
+            //TODO 操作处理
+
         } else {
             //自定义
+            const handler = HANDLER_MAP.get(type);
+            if (isNullOrUndefined(handler)) {
+                console.error("不支持的动作类型-> " + type);
+                return;
+            }
+            handler.handle(action, data);
         }
 
     }

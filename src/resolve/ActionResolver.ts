@@ -1,7 +1,7 @@
 /**
  * 动作解析
  */
-export interface ActionResolver<T> {
+export interface ActionResolver {
 
-    resolve: (...arguments) => Promise<T>|void;
+    resolve: (...params) => Promise<any>|void;
 }

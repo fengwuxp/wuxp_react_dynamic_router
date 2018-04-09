@@ -1,12 +1,11 @@
 {
-  "name": "react_demo",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "serve-dev": "webpack-dev-server --config webpack.dev.js  --devtool eval --progress --colors  --watch --port 8088 --open",
-    "dev": "webpack-dev-server --config ./build/webpack.dev.config.js  --devtool eval --progress --colors  --watch --port 8088 --open"
+  "name": "wuxp_react_dynamic_router",
+  "version": "0.0.1",
+  "publishConfig": {
+    "registry": "http://nexus.oaknt.com:18081/repository/oak_npm_hosted/"
   },
+  "description": "raact common dynamic router",
+  "main": "index.js",
   "author": "",
   "license": "ISC",
   "dependencies": {},

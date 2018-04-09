@@ -1,8 +1,8 @@
-import {History} from "history";
 
 
 export interface RouterViewProps {
-    history: History
+
+    history: any
 }
 
 /**
@@ -24,9 +24,4 @@ export interface RouterView<RouterViewProps> {
      */
     toView: (path: string, params?: any, useServerControl?: boolean) => void
 
-    /**
-     * 路由变化监听
-     * @param p
-     */
-    routerListen?: (p?: any) => void
 }
