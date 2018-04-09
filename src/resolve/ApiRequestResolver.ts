@@ -2,6 +2,7 @@ import ApiClientFetch from "typescript_api_sdk/src/api/impl/es/ApiClientFetch";
 import {DataType} from "typescript_api_sdk/src/api/enums/DataType";
 import {AbstractActionResolver} from "./AbstractActionResolver";
 import {ActionResp} from "../model/ActionResp";
+import {History} from "history";
 
 
 const apiClientFetch = new ApiClientFetch(false);
@@ -12,8 +13,8 @@ const apiClientFetch = new ApiClientFetch(false);
 export default class ApiRequestResolver extends AbstractActionResolver {
 
 
-    constructor() {
-        super(null);
+    constructor(browserNavigator: History) {
+        super(browserNavigator);
     }
 
     /**
@@ -29,7 +30,7 @@ export default class ApiRequestResolver extends AbstractActionResolver {
             data: prams,
             dataType: DataType.JSON
         }).then((resp: ActionResp<any>) => {
-            this.dispatchRespHandle(resp,request,prams);
+            this.dispatchRespHandle(resp, request, prams);
         }).catch((e) => {
             this.exceptionHandler.handle(e)
         });

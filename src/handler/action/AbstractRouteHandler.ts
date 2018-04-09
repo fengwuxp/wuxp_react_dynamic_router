@@ -1,6 +1,6 @@
 import {ActionHandler} from "./ActionHandler";
 import {ActionConfig, PromptData} from "../../model/ActionConfig";
-import {isUndefined} from "util";
+import {isNullOrUndefined, isUndefined} from "util";
 import {PromptType} from "../../enums/PromptType";
 import {stringify} from "querystring";
 
@@ -43,7 +43,7 @@ export default abstract class AbstractRouteHandler implements ActionHandler {
 
         const {value, params, promptData, desc} = action;
 
-        if (isUndefined(data)) {
+        if (isNullOrUndefined(promptData)) {
             this.jump(value, params);
         } else {
             const {type} = promptData;

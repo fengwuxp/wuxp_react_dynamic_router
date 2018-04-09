@@ -39,7 +39,8 @@ const initHandler = (navigator: History, handlerMap?: Map<string, Handler>) => {
     if (isNullOrUndefined(handlerMap)) {
 
         //从工厂中获取handler
-        const map: Map<string, ActionHandler> = require("../factory/handler/ActionHandlerFactoy").default;
+
+        const map = require("../../../../src/config/ActionHandlerConfig").default;
 
         //设置默认的handler
         //路由处理
@@ -47,6 +48,7 @@ const initHandler = (navigator: History, handlerMap?: Map<string, Handler>) => {
         //异常粗了
         map.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler(navigator));
         HANDLER_MAP = map;
+        console.log(map);
     } else {
         HANDLER_MAP = handlerMap;
     }
@@ -131,9 +133,9 @@ export abstract class AbstractActionResolver implements ActionResolver {
         //解析规则
         const {type, value, params, promptData, desc} = action;
 
-        if (StringUtils.hasText(type) || type === "view") {
+        if (isNullOrUndefined(type) || type.length === 0 || type === "view") {
             //视图处理
-            this.routeHandler.handle(action, data);
+            this.routeHandler.handle(action,data);
 
         } else if (type === "action") {
             //TODO 操作处理

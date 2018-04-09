@@ -6,8 +6,7 @@ import ApiRequestResolver from "../resolve/ApiRequestResolver";
 import {ActionResolver} from "../resolve/ActionResolver";
 import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactory";
 
-//浏览器导航器
-const browserNavigator: History = browserNavigatorFactory.get();
+let browserNavigator = null;
 
 /**
  * 默认路由视图
@@ -20,8 +19,12 @@ export abstract class DefaultRouterView<P extends RouterViewProps, S> extends Re
 
 
     constructor(props, context) {
-        super(props,context);
-        this.requestResolver = new ApiRequestResolver();
+        super(props, context);
+        //浏览器导航器
+        if (browserNavigator === null) {
+            browserNavigator = browserNavigatorFactory.get();
+        }
+        this.requestResolver = new ApiRequestResolver(browserNavigator);
     }
 
     back = (event: React.MouseEvent<HTMLElement>) => {
