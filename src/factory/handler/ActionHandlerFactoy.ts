@@ -1,7 +1,5 @@
-import {isUndefined} from "util";
+import {Handler} from "../../handler/Handler";
 
+const handlerMap: Map<string, Handler> = require("../../../../../src/config/ActionHandlerConfig");
 
-const id = isUndefined(process.env.ACTION_HANDLER_CONFIG) ? "../../../../config/ActionHandlerConfig" : process.env.ACTION_HANDLER_CONFIG;
-const handler = require(id);
-
-export default handler;
+export default handlerMap;
