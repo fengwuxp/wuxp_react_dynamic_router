@@ -2,9 +2,9 @@ import ApiClientFetch from "typescript_api_sdk/src/api/impl/es/ApiClientFetch";
 import {DataType} from "typescript_api_sdk/src/api/enums/DataType";
 import {AbstractActionResolver} from "./AbstractActionResolver";
 import {ActionResp} from "../model/ActionResp";
-import {History} from "history";
 
 
+//fetch
 const apiClientFetch = new ApiClientFetch(false);
 
 /**

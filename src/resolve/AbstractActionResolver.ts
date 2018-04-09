@@ -39,14 +39,14 @@ let HANDLER_MAP: Map<string, Handler> = null;
 const initHandler = (navigator: History, handlerMap?: Map<string, Handler>) => {
     if (isNullOrUndefined(handlerMap)) {
 
-        //从工厂中获取handler
-
+        //从配置中获取handler
         const map = require("../../../../src/config/ActionHandlerConfig").default;
 
         //设置默认的handler
         //路由处理
         map.set(ROUTE_VIEW_HANDLER_NAME, new WebReactRouteHandler(navigator));
-        //异常粗了
+
+        //异常处理
         map.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler(navigator));
         HANDLER_MAP = map;
         console.log(map);

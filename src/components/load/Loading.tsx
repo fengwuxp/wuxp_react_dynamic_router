@@ -1,6 +1,10 @@
 import * as React from "react";
+import LoadingComponentProps = LoadableExport.LoadingComponentProps;
 
-export default class Loading extends React.Component<any, any> {
+/**
+ * 加载中
+ */
+export default class Loading extends React.Component<LoadingComponentProps, any> {
     render() {
         return <div>Loading...</div>
     }
