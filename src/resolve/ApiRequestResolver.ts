@@ -1,6 +1,6 @@
 import ApiClientFetch from "typescript_api_sdk/src/api/impl/es/ApiClientFetch";
 import {DataType} from "typescript_api_sdk/src/api/enums/DataType";
-import {AbstractActionResolver, EXCEPTION_HANDLER_NAME, ROUTE_VIEW_HANDLER_NAME} from "./AbstractActionResolver";
+import {AbstractActionResolver} from "./AbstractActionResolver";
 import {ActionResp} from "../model/ActionResp";
 
 
@@ -12,8 +12,8 @@ const apiClientFetch = new ApiClientFetch(false);
 export default class ApiRequestResolver extends AbstractActionResolver {
 
 
-    constructor(props: any) {
-        super(props);
+    constructor() {
+        super(null);
     }
 
     /**
@@ -22,7 +22,7 @@ export default class ApiRequestResolver extends AbstractActionResolver {
      * @param prams   请求参数
      * @returns {Promise<any>}
      */
-    resolve = (request: string, prams: any): Promise<any> => {
+    resolve = (request: string, prams: any): void => {
 
         apiClientFetch.post({
             url: request,
@@ -36,7 +36,10 @@ export default class ApiRequestResolver extends AbstractActionResolver {
 
         return null;
     };
-    protected doFailure: (...arguments) => void;
+
+    protected doFailure = (resp: ActionResp<any>): void => {
+
+    };
 
 
 }

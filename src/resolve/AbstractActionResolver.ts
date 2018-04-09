@@ -9,6 +9,7 @@ import {Handler} from "../handler/Handler";
 import UnifiedExceptionHandler from "../handler/execption/UnifiedExceptionHandler";
 import WebReactRouteHandler from "../handler/action/WebReactRouteHandler";
 import {ExceptionHandler} from "../handler/execption/ExceptionHandler";
+import {History} from "history";
 
 
 /**
@@ -27,17 +28,26 @@ export const EXCEPTION_HANDLER_NAME = "EXCEPTION_HANDLER_NAME";
 /**
  * 动作处理map
  */
-let handlerMap: Map<string, Handler> = null;
+let HANDLER_MAP: Map<string, Handler> = null;
 
-const initHandler = (reactProps: any, handlerMap?: Map<string, ActionHandler>) => {
+/**
+ * 初始handler
+ * @param {History} navigator
+ * @param {Map<string, ActionHandler>} handlerMap
+ */
+const initHandler = (navigator: History, handlerMap?: Map<string, ActionHandler>) => {
     if (isNullOrUndefined(handlerMap)) {
-        const map: Map<string, ActionHandler> = require("../factory/ActionHandlerFactoy").default;
+
+        //从工厂中获取handler
+        const map: Map<string, ActionHandler> = require("../factory/handler/ActionHandlerFactoy").default;
+
         //设置默认的handler
-        this.handlerMap.set(ROUTE_VIEW_HANDLER_NAME, new WebReactRouteHandler(reactProps.history));
-        this.handlerMap.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler(reactProps.history));
-        handlerMap = map;
+        const webReactRouteHandler = new WebReactRouteHandler(navigator);
+        this.HANDLER_MAP.set(ROUTE_VIEW_HANDLER_NAME, webReactRouteHandler);
+        this.HANDLER_MAP.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler());
+        HANDLER_MAP = map;
     } else {
-        handlerMap = handlerMap;
+        HANDLER_MAP = handlerMap;
     }
 };
 
@@ -51,12 +61,15 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
      */
     protected exceptionHandler: ExceptionHandler;
 
-    protected routerHandler: ActionHandler;
+    /**
+     * 路由处理器
+     */
+    protected routeHandler: ActionHandler;
 
 
-    constructor(reactProps: any, handlerMap?: Map<string, ActionHandler>) {
-        initHandler(reactProps, handlerMap);
-        this.routerHandler = handlerMap.get(ROUTE_VIEW_HANDLER_NAME);
+    constructor(navigator: History, handlerMap?: Map<string, ActionHandler>) {
+        initHandler(navigator, handlerMap);
+        this.routeHandler = handlerMap.get(ROUTE_VIEW_HANDLER_NAME);
         this.exceptionHandler = handlerMap.get(EXCEPTION_HANDLER_NAME);
     }
 
@@ -65,7 +78,12 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
      * @param {ActionResp<any>} resp
      * @returns {Promise<any>}
      */
-    abstract resolve: (...arguments) => Promise<any>;
+    abstract resolve: (...arguments) => void;
+
+    /**
+     * 失败处理
+     */
+    protected abstract doFailure: (...arguments) => void;
 
 
     protected dispatchResp(resp: ActionResp<any>) {
@@ -88,12 +106,6 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
 
 
     /**
-     * 失败处理
-     */
-    protected abstract doFailure: (...arguments) => void;
-
-
-    /**
      * 处理路由
      * @param {ActionConfig} action
      * @param {any} data
@@ -104,8 +116,8 @@ export abstract class AbstractActionResolver implements ActionResolver<any> {
         const {type, value, params, promptData, desc} = action;
 
         if (StringUtils.hasText(type) || type === "view") {
-            //视图解析
-            this.routerHandler.handle(action, data);
+            //视图处理
+            this.routeHandler.handle(action, data);
 
         } else if (type === "action") {
             //操作处理

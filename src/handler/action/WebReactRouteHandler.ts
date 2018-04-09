@@ -1,24 +1,19 @@
 import {ActionConfig} from "../../model/ActionConfig";
-import {PromptType} from "../../enums/PromptType";
-import {isUndefined} from "util";
 import {History} from "history";
 import {stringify} from "querystring";
 import AbstractRouteHandler from "./AbstractRouteHandler";
-import createBrowserHistory from "history/createBrowserHistory";
+
+//导航器
+let history: History;
 
 /**
  * web端基于react-router 的视图路由处理
  */
 export default class WebReactRouteHandler extends AbstractRouteHandler {
 
-    private history: History;
-
-
-    constructor(history?: History) {
+    constructor(navigator: History) {
         super();
-        this.history = createBrowserHistory({
-            basename: process.env.BASE_NAME
-        });
+        history = navigator;
     }
 
     handle = (action: ActionConfig, data: any): void => {
@@ -36,7 +31,7 @@ export default class WebReactRouteHandler extends AbstractRouteHandler {
 
 
     protected jump = (path: string, prams: any = {}, data = {}): void => {
-        this.history.push({
+        history.push({
             pathname: path,
             state: data,
             search: stringify(prams)

@@ -3,5 +3,5 @@
  */
 export interface ActionResolver<T> {
 
-    resolve: (...arguments) => Promise<T>;
+    resolve: (...arguments) => Promise<T>|void;
 }
