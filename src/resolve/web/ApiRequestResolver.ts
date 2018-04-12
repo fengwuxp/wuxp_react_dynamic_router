@@ -1,7 +1,8 @@
 import ApiClientFetch from "typescript_api_sdk/src/api/impl/es/ApiClientFetch";
 import {DataType} from "typescript_api_sdk/src/api/enums/DataType";
 import {AbstractActionResolver} from "./AbstractActionResolver";
-import {ActionResp} from "../model/ActionResp";
+import {ActionResp} from "../../model/ActionResp";
+import message from 'antd/lib/message';
 
 
 //fetch
@@ -35,12 +36,25 @@ export default class ApiRequestResolver extends AbstractActionResolver {
             this.exceptionHandler.handle(e)
         });
 
-        return null;
     };
 
     protected doFailure = (resp: ActionResp<any>): void => {
         console.log("业务逻辑错误-->");
         console.log(resp);
+        const {code} = resp;
+
+        switch (code) {
+
+            case 99:
+                //会话超时
+                message.info("会话超时，请重新登录！", 2000, () => {
+                    this.exceptionHandler.handle401();
+                });
+                break;
+            default:
+                console.log("-----------");
+        }
+
     };
 
 

@@ -1,4 +1,4 @@
-import {NavigatorFactory} from "./NavigatorFactory";
+import {NavigatorFactory} from "../NavigatorFactory";
 import createBrowserHistory, {BrowserHistoryBuildOptions} from "history/createBrowserHistory";
 import {History} from "history";
 

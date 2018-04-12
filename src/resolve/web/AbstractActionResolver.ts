@@ -1,16 +1,16 @@
-import {ActionResolver} from "./ActionResolver";
-import {ActionConfig} from "../model/ActionConfig";
-import {PromptType} from "../enums/PromptType";
+import {ActionResolver} from "../ActionResolver";
+import {ActionConfig} from "../../model/ActionConfig";
+import {PromptType} from "../../enums/PromptType";
 import {isNullOrUndefined} from "util";
 import StringUtils from "typescript_api_sdk/src/utils/StringUtils";
-import {ActionHandler} from "../handler/action/ActionHandler";
-import {ActionResp} from "../model/ActionResp";
-import {Handler} from "../handler/Handler";
-import UnifiedExceptionHandler from "../handler/execption/UnifiedExceptionHandler";
-import WebReactRouteHandler from "../handler/action/WebReactRouteHandler";
-import {ExceptionHandler} from "../handler/execption/ExceptionHandler";
+import {ActionHandler} from "../../handler/action/ActionHandler";
+import {ActionResp} from "../../model/ActionResp";
+import {Handler} from "../../handler/Handler";
+import WebHttpExceptionHandler from "../../handler/execption/WebHttpExceptionHandler";
+import WebReactRouteHandler from "../../handler/action/WebReactRouteHandler";
+import {HttpExceptionHandler} from "../../handler/execption/HttpExceptionHandler";
 import {History} from "history";
-import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactory";
+import browserNavigatorFactory from "../../factory/navigator/web/BrowseRNavigatorFactory";
 
 
 /**
@@ -47,7 +47,7 @@ const initHandler = (navigator: History, handlerMap?: Map<string, Handler>) => {
         map.set(ROUTE_VIEW_HANDLER_NAME, new WebReactRouteHandler(navigator));
 
         //异常处理
-        map.set(EXCEPTION_HANDLER_NAME, new UnifiedExceptionHandler(navigator));
+        map.set(EXCEPTION_HANDLER_NAME, new WebHttpExceptionHandler(navigator));
         HANDLER_MAP = map;
         console.log(map);
     } else {
@@ -63,7 +63,7 @@ export abstract class AbstractActionResolver implements ActionResolver {
     /**
      * 异常处理器
      */
-    protected exceptionHandler: ExceptionHandler;
+    protected exceptionHandler: HttpExceptionHandler;
 
     /**
      * 路由处理器
@@ -77,7 +77,7 @@ export abstract class AbstractActionResolver implements ActionResolver {
         }
         initHandler(navigator, handlerMap);
         this.routeHandler = HANDLER_MAP.get(ROUTE_VIEW_HANDLER_NAME);
-        this.exceptionHandler = <ExceptionHandler>HANDLER_MAP.get(EXCEPTION_HANDLER_NAME);
+        this.exceptionHandler = <HttpExceptionHandler>HANDLER_MAP.get(EXCEPTION_HANDLER_NAME);
     }
 
     /**
@@ -115,7 +115,6 @@ export abstract class AbstractActionResolver implements ActionResolver {
                 value: request,
                 prams
             });
-
         } else if (length === 1) {
             //有一个
             this.handleAction(actions[0], data);

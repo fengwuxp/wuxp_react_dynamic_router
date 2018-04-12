@@ -1,11 +1,12 @@
 import * as React from "react";
 import {RouterView, RouterViewProps} from "./RouterView";
 import {stringify} from "querystring";
-import ApiRequestResolver from "../resolve/ApiRequestResolver";
+import ApiRequestResolver from "../resolve/web/ApiRequestResolver";
 import {ActionResolver} from "../resolve/ActionResolver";
-import browserNavigatorFactory from "../factory/navigator/BrowseRNavigatorFactory";
+import browserNavigatorFactory from "../factory/navigator/web/BrowseRNavigatorFactory";
+import {History} from "history";
 
-let browserNavigator = null;
+let browserNavigator:History = null;
 
 /**
  * 浏览器路由视图

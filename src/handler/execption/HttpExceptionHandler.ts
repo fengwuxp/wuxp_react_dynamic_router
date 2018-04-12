@@ -1,9 +1,10 @@
 import {Handler} from "../Handler";
 
+
 /**
- * 异常处理器
+ * http 请求 异常处理器
  */
-export abstract class ExceptionHandler implements Handler {
+export abstract class HttpExceptionHandler implements Handler {
 
     handle = (e: any): void => {
 
@@ -29,32 +30,34 @@ export abstract class ExceptionHandler implements Handler {
             default:
                 console.error("未处理的异常", e);
         }
+
+        //使用广播
     };
 
 
     /**
      * 401
      */
-    protected abstract handle400: () => void;
+     abstract handle400: () => void;
 
     /**
      * 401
      */
-    protected abstract handle401: () => void;
+     abstract handle401: () => void;
 
     /**
      * 403
      */
-    protected abstract handle403: () => void;
+     abstract handle403: () => void;
 
     /**
      * 处理404
      */
-    protected abstract handle404: () => void;
+     abstract handle404: () => void;
 
     /**
      * 处理500
      */
-    protected abstract handle500: () => void;
+     abstract handle500: () => void;
 }
 
