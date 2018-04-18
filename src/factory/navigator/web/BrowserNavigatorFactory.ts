@@ -7,7 +7,7 @@ let browserHistory: History = null;
 /**
  * 浏览器导航器
  */
-class BrowseRNavigatorFactory implements NavigatorFactory {
+class BrowserNavigatorFactory implements NavigatorFactory {
 
     /**
      * 生成一个
@@ -33,4 +33,4 @@ class BrowseRNavigatorFactory implements NavigatorFactory {
 
 }
 
-export default new BrowseRNavigatorFactory();
+export default new BrowserNavigatorFactory();

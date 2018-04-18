@@ -7,12 +7,12 @@ export interface SessionManager<T> {
      * 登录
      * @param params
      */
-    login: (...params) => void;
+    login: (...params) => Promise<T>;
 
     /**
      * 退出
      */
-    logout: () => void;
+    logout: () => Promise<T>;
 
 
     /**
@@ -20,4 +20,10 @@ export interface SessionManager<T> {
      * @returns {T}
      */
     getCurrentMember: () => T;
+
+    /**
+     * 用户是否登录
+     * @returns {boolean}
+     */
+    isLogin: () => boolean;
 }

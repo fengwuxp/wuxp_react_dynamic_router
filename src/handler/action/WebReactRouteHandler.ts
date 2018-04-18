@@ -1,4 +1,4 @@
-import {ActionConfig} from "../../model/ActionConfig";
+import {ActionConfig} from "../../model/admin/ActionConfig";
 import {History} from "history";
 import {stringify} from "querystring";
 import AbstractRouteHandler from "./AbstractRouteHandler";

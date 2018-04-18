@@ -1,16 +1,16 @@
 import {ActionResolver} from "../ActionResolver";
-import {ActionConfig} from "../../model/ActionConfig";
+import {ActionConfig} from "../../model/admin/ActionConfig";
 import {PromptType} from "../../enums/PromptType";
 import {isNullOrUndefined} from "util";
 import StringUtils from "typescript_api_sdk/src/utils/StringUtils";
 import {ActionHandler} from "../../handler/action/ActionHandler";
-import {ActionResp} from "../../model/ActionResp";
+import {ActionResp} from "../../model/admin/ActionResp";
 import {Handler} from "../../handler/Handler";
 import WebHttpExceptionHandler from "../../handler/execption/WebHttpExceptionHandler";
 import WebReactRouteHandler from "../../handler/action/WebReactRouteHandler";
 import {HttpExceptionHandler} from "../../handler/execption/HttpExceptionHandler";
 import {History} from "history";
-import browserNavigatorFactory from "../../factory/navigator/web/BrowseRNavigatorFactory";
+import browserNavigatorFactory from "../../factory/navigator/web/BrowserNavigatorFactory";
 
 
 /**

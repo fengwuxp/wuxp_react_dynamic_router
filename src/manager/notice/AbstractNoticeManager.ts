@@ -1,20 +1,16 @@
 import {NoticeManager} from "./NoticeManager";
 
-export default abstract class AbstractNoticeManager<T> implements NoticeManager<T> {
+export default abstract class AbstractNoticeManager<T> implements NoticeManager<Promise<T>> {
 
     /**
      * 消息通知列表
      */
-    protected messageList: T = null;
+    protected messageList: T;
 
 
-    getNotices = (...params): T => {
-        if (this.messageList === null) {
-            const e = async () => {
-                //初始化消息列表
-                await this.initNotices(params);
-            };
-            e();
+    async getNotices(...params): Promise<T> {
+        if (this.messageList === undefined) {
+            this.messageList = await this.initNotices(params);
         }
         return this.messageList;
     };
@@ -27,7 +23,7 @@ export default abstract class AbstractNoticeManager<T> implements NoticeManager<
      * 初始化通知消息列表
      * return {T}
      */
-    protected abstract initNotices: (...params) => Promise<T>;
+    protected abstract initNotices: (...params) => Promise<T> | T;
 
 
     /**

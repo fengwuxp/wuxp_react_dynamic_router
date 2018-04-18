@@ -1,5 +1,5 @@
 import {ActionHandler} from "./ActionHandler";
-import {ActionConfig, PromptData} from "../../model/ActionConfig";
+import {ActionConfig, PromptData} from "../../model/admin/ActionConfig";
 import {isNullOrUndefined, isUndefined} from "util";
 import {PromptType} from "../../enums/PromptType";
 import {stringify} from "querystring";

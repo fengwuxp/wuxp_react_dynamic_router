@@ -10,6 +10,9 @@ export default class SimpleNoticeManager extends AbstractNoticeManager<Array<any
     protected initNotices: (...params) => Promise<Array<any>>;
 
     protected updateNoticeByRemote: (...params) => void;
+    clearNotices: () => void;
+
+
 
 
 }

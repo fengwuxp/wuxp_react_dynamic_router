@@ -1,9 +1,10 @@
 import {MenuManager} from "./MenuManager";
 
+
 /**
  * 抽象实现
  */
-export default abstract class AbstractMenuManager<T> implements MenuManager<T> {
+export default abstract class AbstractMenuManager<T> implements MenuManager<Promise<T>> {
 
 
     /**
@@ -12,13 +13,10 @@ export default abstract class AbstractMenuManager<T> implements MenuManager<T> {
     protected menus: T;
 
 
-    getMenus = (...params): T => {
-        if (this.menus === null) {
-            const e = async () => {
-                //初始化菜单列表
-                await this.initMenus(params);
-            };
-            e();
+    async getMenus(...params): Promise<T> {
+
+        if (this.menus === undefined) {
+            this.menus = await this.initMenus(params);
         }
         return this.menus;
     };
@@ -28,7 +26,7 @@ export default abstract class AbstractMenuManager<T> implements MenuManager<T> {
      * @param params
      * return {Promise<T>}
      */
-    protected abstract initMenus: (...prams) => Promise<T>;
+    protected abstract initMenus: (...prams) => Promise<T> | T;
 
     /**
      * 切换菜单 当存在多模块是进行菜单切换
@@ -41,6 +39,6 @@ export default abstract class AbstractMenuManager<T> implements MenuManager<T> {
      * 点击菜单项
      * @param params
      */
-     abstract clickMenuItem: (...params) => void;
+    abstract clickMenuItem: (...params) => void;
 
 }

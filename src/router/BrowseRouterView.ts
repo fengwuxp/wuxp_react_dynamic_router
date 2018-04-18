@@ -3,7 +3,7 @@ import {RouterView, RouterViewProps} from "./RouterView";
 import {stringify} from "querystring";
 import ApiRequestResolver from "../resolve/web/ApiRequestResolver";
 import {ActionResolver} from "../resolve/ActionResolver";
-import browserNavigatorFactory from "../factory/navigator/web/BrowseRNavigatorFactory";
+import browserNavigatorFactory from "../factory/navigator/web/BrowserNavigatorFactory";
 import {History} from "history";
 
 let browserNavigator:History = null;
