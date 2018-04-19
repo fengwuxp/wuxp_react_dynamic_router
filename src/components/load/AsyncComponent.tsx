@@ -1,6 +1,7 @@
 import * as React from "react";
-import * as Loadable from 'react-loadable';
-import Loading from "./Loading";
+import Loadable from 'react-loadable';
+
+let Loading = null;
 
 /**
  * 异步加载组件
@@ -12,7 +13,7 @@ export default function asyncComponent<T>(component: any): React.ComponentType<T
 
     const C: React.ComponentType<T> = Loadable({
         loader: () => component(),
-        loading: () => <Loading/>,
+        loading: () => <Loading/>
     });
 
 
@@ -23,4 +24,8 @@ export default function asyncComponent<T>(component: any): React.ComponentType<T
     }
 
     return AsyncComponent;
+}
+
+export function setDefaultLoadingComponent(componentLoading: any) {
+    Loading = componentLoading
 }
