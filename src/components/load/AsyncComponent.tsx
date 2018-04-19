@@ -12,7 +12,7 @@ export default function asyncComponent<T>(component: any): React.ComponentType<T
 
     const C: React.ComponentType<T> = Loadable({
         loader: () => component(),
-        loading: () => <Loading pastDelay={true} timedOut={300}/>,
+        loading: () => <Loading/>,
     });
 
 
