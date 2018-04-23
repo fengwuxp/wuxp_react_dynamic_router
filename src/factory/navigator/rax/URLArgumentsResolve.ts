@@ -1,6 +1,7 @@
-import CommonUtils from "../utils/CommonUtils";
 import StringToHexUtil from "typescript_api_sdk/src/codec/StringToHexUtil";
+import StringUtils from "typescript_api_sdk/src/utils/StringUtils";
 import {parse, stringify} from "querystring";
+import {isNullOrUndefined} from "util";
 
 
 /**
@@ -27,7 +28,7 @@ export class URLArgumentsResolve {
 
         let queryString: string = "";
         //跳过刷新参数
-        if (CommonUtils.isNullOrUndefined(params['weex_refresh']) && hexEncoding) {
+        if (isNullOrUndefined(params['weex_refresh']) && hexEncoding) {
             //转为16进制数据
             queryString = stringify(params);
             queryString = StringToHexUtil.encode(queryString);
@@ -51,7 +52,7 @@ export class URLArgumentsResolve {
 
         let queryString: string = url.split("?")[0];
 
-        if (!CommonUtils.hasText(queryString)) {
+        if (!StringUtils.hasText(queryString)) {
             return {};
         }
         if (hexDecoding && queryString.startsWith(DEFAULT_PARAM_KEY_NAME)) {
