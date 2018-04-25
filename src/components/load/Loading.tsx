@@ -1,5 +1,4 @@
 import * as React from "react";
-import LoadingComponentProps = LoadableExport.LoadingComponentProps;
 
 /**
  * 加载中
