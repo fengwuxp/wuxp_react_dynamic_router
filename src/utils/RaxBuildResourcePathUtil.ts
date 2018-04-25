@@ -1,4 +1,4 @@
-import WeexEnvUtil from "typescript_api_sdk/src/utils/WeexEnvUtil"
+import * as  WeexEnvUtil from "typescript_api_sdk/src/utils/WeexEnvUtil"
 
 const isAndroid: boolean = WeexEnvUtil.isAndroid();
 
