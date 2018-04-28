@@ -32,7 +32,7 @@ class StoreBuilder<S> {
     build = (): Store<S> => {
         const {reducers, sagaMiddleware} = this;
 
-        return createStore<S>(
+        return createStore<S,any,any,any>(
             reducers,
             applyMiddleware(routeMiddleware,sagaMiddleware)
         );

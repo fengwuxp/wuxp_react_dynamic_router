@@ -1,5 +1,5 @@
 import {isFunction, isNullOrUndefined, isUndefined} from "util";
-import {Action, AnyAction, Reducer, ReducersMapObject} from "redux";
+import { AnyAction, Reducer} from "redux";
 
 /**
  * redux reducer定义
@@ -58,9 +58,9 @@ export function reducerFactory<T extends ReduxReducer<S>, S>(reducer: T): Reduce
             element = reducer[type];
             if (isUndefined(element)) {
                 //如果是undefined，使用action中的 payload
-                console.log(`-->payload ${payload}`);
+                // console.log(`-->payload ${payload}`);
                 element = payload;
-                console.log(element);
+                // console.log(element);
             } else if (isFunction(element)) {
                 //函数
                 element = element(state, action) as S;

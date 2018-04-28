@@ -73,7 +73,7 @@ export function createRootSaga() {
             if (isFunction(sagaAction)) {
                 //以非阻塞的形式调用
                 console.log(`执行saga 任务-> ${action.type}`);
-                yield fork(sagaAction, action);
+                yield fork(sagaAction, (action as any).payload);
             }
         });
     }

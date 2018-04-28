@@ -43,16 +43,16 @@ function reduxManagerFactory<T>(manager: T, reduxAction: any, store: Store<any>)
              * @param prams  调用action的参数
              */
             return function (params) {
-                console.log(prop);
+                // console.log(prop);
                 // console.log(reduxAction)
                 if (Reflect.has(reduxAction,prop)) {
                     //调用 action中的方法
-                    console.log(`action manager-> ${prop}`);
+                    // console.log(`action manager-> ${prop}`);
                     return reduxAction[prop](params);
                 } else {
-                    console.log(`saga manager-> ${prop}`);
+                    // console.log(`saga manager-> ${prop}`);
                     let propName: string = target.constructor.name + "." + prop.toString();
-                    console.log(`${propName}`);
+                    // console.log(`${propName}`);
                     proxyDispatchByStore(target, propName, params, store);
                 }
             }

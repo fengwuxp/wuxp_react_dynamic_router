@@ -1,5 +1,6 @@
 import * as moment from "moment";
 import {MomentFormatString} from "../enums/MomentFormatString";
+import {isNullOrUndefined} from "util";
 
 export default class MomentHelper {
 
@@ -36,9 +37,12 @@ export default class MomentHelper {
      * @param {string[]} prefix 范围参数的前缀
      */
     static handlerFormRangerDateParam = (req: any, formName: string, fmt?: MomentFormatString, prefix: string[] = ['min', 'max']) => {
-        const picker = MomentHelper.handlerRangePicker(req[formName], fmt);
-        req[`${prefix[0]}${formName}`] = picker[0];
-        req[`${prefix[1]}${formName}`] = picker[1];
+        if (!isNullOrUndefined(req[formName])) {
+
+            const picker = MomentHelper.handlerRangePicker(req[formName], fmt);
+            req[`${prefix[0]}${formName}`] = picker[0];
+            req[`${prefix[1]}${formName}`] = picker[1];
+        }
         delete req[formName];
     }
 }
