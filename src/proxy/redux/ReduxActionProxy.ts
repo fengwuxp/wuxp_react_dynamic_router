@@ -8,7 +8,7 @@ import {Store} from "redux";
  * @returns {T}
  * @constructor
  */
-function reduxActionFactory<T>(action: T | any, store: Store<any>): T {
+export function reduxActionFactory<T>(action: T | any, store: Store<any>): T {
     const ActionProxyHandler: ProxyHandler<any> = {
         get: function (target: any, prop: PropertyKey, receiver: any): any {
 
@@ -33,7 +33,7 @@ function reduxActionFactory<T>(action: T | any, store: Store<any>): T {
  * @param store
  * @returns {object}
  */
-function reduxManagerFactory<T>(manager: T, reduxAction: any, store: Store<any>): T {
+export function reduxManagerFactory<T>(manager: T, reduxAction: any, store: Store<any>): T {
 
 
     const SagaProxyHandler: ProxyHandler<any> = {
