@@ -7,9 +7,14 @@ export interface UIBuilder {
 
 
     /**
-     * 加入一个组件到视图中
-     * @param params
-     * @returns {React.ReactNode}
+     * 加入一个组件到 view的 mask 层
+     * @param {React.ReactNode} component
+     * @returns {this}
      */
-    appendComponent: (...params) => React.ReactNode;
+    appendMaskComponent: (component: React.ReactNode) => this;
+
+    /**
+     * 移除
+     */
+    removeMaskComponent: () => void;
 }

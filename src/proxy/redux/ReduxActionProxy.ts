@@ -8,8 +8,8 @@ import {Store} from "redux";
  * @returns {T}
  * @constructor
  */
-export function reduxActionFactory<T>(action: T | any, store: Store<any>): T {
-    const ActionProxyHandler: ProxyHandler<any> = {
+export function reduxActionFactory<T extends object>(action: T | any, store: Store<any>): T {
+    const ActionProxyHandler: ProxyHandler<T> = {
         get: function (target: any, prop: PropertyKey, receiver: any): any {
 
             /**
@@ -33,10 +33,10 @@ export function reduxActionFactory<T>(action: T | any, store: Store<any>): T {
  * @param store
  * @returns {object}
  */
-export function reduxManagerFactory<T>(manager: T, reduxAction: any, store: Store<any>): T {
+export function reduxManagerFactory<T extends object>(manager: T, reduxAction: any, store: Store<any>): T {
 
 
-    const SagaProxyHandler: ProxyHandler<any> = {
+    const SagaProxyHandler: ProxyHandler<T> = {
         get: function (target: any, prop: PropertyKey, receiver: any): any {
 
             /**
@@ -45,7 +45,7 @@ export function reduxManagerFactory<T>(manager: T, reduxAction: any, store: Stor
             return function (params) {
                 // console.log(prop);
                 // console.log(reduxAction)
-                if (Reflect.has(reduxAction,prop)) {
+                if (Reflect.has(reduxAction, prop)) {
                     //调用 action中的方法
                     // console.log(`action manager-> ${prop}`);
                     return reduxAction[prop](params);
@@ -98,7 +98,7 @@ function proxyDispatchByStore(target: any, prop: string, params, store: Store<an
  * @param {Store<any>} store
  * @returns {S}
  */
-export function reduxHandlerFactory<S>(manager: S, store: Store<any>): S {
+export function reduxHandlerFactory<S extends object>(manager: S, store: Store<any>): S {
 
 
     //找到父类redux action的构造函数
