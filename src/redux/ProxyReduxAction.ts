@@ -86,9 +86,7 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
 
     const handlerName = handler.constructor.name;
 
-
     console.log("创建reducer", handlerName, handler['name']);
-
 
     const actions = {};
 
@@ -98,21 +96,26 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
         handler.actionNames = new Map<string, string>();
     }
 
-    for (const key in handler) {
-        if (key === "actionNames" || key === "default") {
-            continue;
-        }
-        //固定属性
-        actions[key] = handler[key];
-    }
-
     //获取原型链
     const handlerPrototype = Object.getPrototypeOf(handler);
 
     //获取原型链上的属性名称
     const keys = Object.getOwnPropertyNames(handlerPrototype);
 
-    console.log(keys, handlerPrototype);
+    for (const key in handler) {
+        if (key === "actionNames" || key === "default") {
+            continue;
+        }
+        //固定属性
+        actions[key] = handler[key];
+        if (key.startsWith("set")) {
+            let getFuncName = convertFunctionNameByPrefix(key);
+            if (getFuncName in handlerPrototype) {
+                handler.actionNames.set(getFuncName, key);
+            }
+        }
+    }
+    // console.log(keys, handlerPrototype);
     keys.filter(key => key !== "constructor").forEach(key => {
         const handle = handlerPrototype[key];
         if (isNullOrUndefined(handle)) {
@@ -134,10 +137,10 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
         }
     });
 
-    console.info("===============actions-----------", actions);
+    // console.info("===============actions-----------", actions);
 
     //加入到cache中
-    return function (state: S, action: ReduxAction): S {
+    return function (state: S = defaultState, action: ReduxAction): S {
         const {type, payload} = action;
 
         if (type.endsWith(SAGA_ACTION_TYPE_SUFFIX)) {
@@ -146,11 +149,13 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
             return state;
         }
 
-        let handle = actions[type];
+        let handle = actions[type.split(".")[1]];
+
+        // console.log("-----------接收到一个action----->", type, handle);
 
         if (isUndefined(handle)) {
             //action 不存在使用默认的 state
-            return defaultState;
+            return state;
         }
 
         if (handle === USE_NEW_SATE) {
