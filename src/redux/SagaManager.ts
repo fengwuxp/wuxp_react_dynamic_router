@@ -1,14 +1,15 @@
-import {call, fork, put, takeEvery} from "redux-saga/effects";
+import {call, put, takeEvery} from "redux-saga/effects";
 import {isFunction, isNullOrUndefined, isUndefined} from "util";
 import {getReducerTypeNameBySaga, SAGA_ACTION_TYPE_SUFFIX} from "./ProxyReduxAction";
 import {ReduxAction} from "./ReduxAction";
+import {SagaHandler} from "./SagaHandler";
 
 
 /**
  * saga effects对象的缓存
  * @type {{}}
  */
-const SAGA_CACHE: Map<string, any> = new Map<string, any>();
+const SAGA_CACHE: Map<string, SagaHandler> = new Map<string, SagaHandler>();
 
 
 /**
@@ -26,9 +27,9 @@ const SAGA_ROOT_DEFAULT_PATTER = function (action: ReduxAction) {
 /**
  *
  * 添加一个普通的saga处理者
- * @param handler
+ * @param {SagaHandler} handler
  */
-export function addSagaHandler(handler: any) {
+export function addSagaHandler(handler: SagaHandler) {
 
     // const handler = new actionHandler();
     SAGA_CACHE.set(handler.constructor.name, handler);
@@ -37,9 +38,9 @@ export function addSagaHandler(handler: any) {
 
 /**
  *  添加一个错误处理者
- * @param handler
+ * @param {SagaHandler} handler
  */
-export function addSagaErrorHandler(handler: any) {
+export function addSagaErrorHandler(handler: SagaHandler) {
     addSagaHandler(handler);
 }
 
@@ -51,13 +52,18 @@ export function addSagaErrorHandler(handler: any) {
  */
 function finSagaFunctionByActionType(type: string) {
 
-    const types = type.split(".");
-    // console.log(SAGA_CACHE);
+    const types = type.replace(SAGA_ACTION_TYPE_SUFFIX, "").split(".");
     let handler = SAGA_CACHE.get(types[0]);
     if (isNullOrUndefined(handler)) {
-        return;
+        return {};
     }
-    return handler[types[1]];
+
+    const actionName = handler.actionNames.get(types[1]);
+
+    return {
+        handler: handler[types[1]],
+        actionName: `${types[0]}.${actionName}`
+    };
 }
 
 /**
@@ -79,11 +85,11 @@ export function createRootSaga() {
 
             let reducerTypeName = getReducerTypeNameBySaga(type);
             console.log("接收到一个action", type, reducerTypeName);
-            let sagaAction = finSagaFunctionByActionType(reducerTypeName);
-            if (isFunction(sagaAction)) {
+            let {handler, actionName} = finSagaFunctionByActionType(reducerTypeName);
+            if (isFunction(handler)) {
                 //以非阻塞的形式调用
-                console.log(`执行saga 任务-> ${type}`);
-                let result = yield call(sagaAction, payload, reducerTypeName);
+                console.log(`执行saga 任务-> ${type}`, handler.name);
+                let result = yield call(handler, payload, actionName);
 
                 //如果action 只是单纯的返回state，可以不做实现
                 if (isUndefined(result)) {
@@ -91,10 +97,10 @@ export function createRootSaga() {
                     result = payload;
                 }
 
-                console.log(`更新 saga 任务-> 结果到store  type=${reducerTypeName}`, result);
+                console.log(`更新 saga 任务-> 结果到store  type=${actionName}`, result);
                 //更新state
                 yield put({
-                    type: reducerTypeName,
+                    type: actionName,
                     payload: result
                 });
 

@@ -1,5 +1,4 @@
 import {NativeRouteOption, RouteMeta, RouteOption} from "./NativeRouteOption";
-import {buildResourceByURI} from "../../../utils/RaxBuildResourcePathUtil";
 import {isNullOrUndefined} from "util";
 import NativeRouteStrategy from "./NativeRouteStrategy";
 import {URLArgumentsResolve} from "./URLArgumentsResolve";

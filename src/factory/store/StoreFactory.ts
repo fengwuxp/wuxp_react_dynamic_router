@@ -1,6 +1,6 @@
-import {createStore, combineReducers, applyMiddleware, Store, Reducer, ReducersMapObject} from 'redux'
+import {applyMiddleware, combineReducers, createStore, Reducer, ReducersMapObject, Store} from 'redux'
 import createSagaMiddleware, {SagaMiddleware, SagaMiddlewareOptions} from 'redux-saga'
-import { routerReducer, routerMiddleware} from 'react-router-redux'
+import {routerMiddleware, routerReducer} from 'react-router-redux'
 import BrowserNavigatorFactory from "../navigator/web/BrowserNavigatorFactory";
 
 const history = BrowserNavigatorFactory.factory();

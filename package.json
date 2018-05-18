@@ -8,7 +8,9 @@
   "main": "index.js",
   "author": "fengwuxp",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "@types/redux-actions": "^2.3.0"
+  },
   "devDependencies": {
     "@babel/plugin-transform-typescript": "^7.0.0-beta.42",
     "@types/lodash": "^4.14.106",
@@ -74,7 +76,7 @@
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
     "redux": "^4.0.0",
-    "redux-actions": "^2.3.0",
+    "redux-actions": "^2.3.2",
     "redux-logger": "^3.0.6",
     "redux-saga": "^0.16.0",
     "redux-thunk": "^2.2.0",

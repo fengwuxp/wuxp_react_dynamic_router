@@ -1,8 +1,6 @@
 import {ActionHandler} from "./ActionHandler";
-import {ActionConfig, PromptData} from "../../model/admin/ActionConfig";
-import {isNullOrUndefined, isUndefined} from "util";
-import {PromptType} from "../../enums/PromptType";
-import {stringify} from "querystring";
+import {ActionConfig} from "../../model/admin/ActionConfig";
+import {isNullOrUndefined} from "util";
 
 /**
  * 抽象的路由处理者

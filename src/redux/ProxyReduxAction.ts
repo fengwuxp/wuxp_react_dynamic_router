@@ -1,9 +1,9 @@
-import {Action, AnyAction, Reducer, Store} from "redux";
-import {isNullOrUndefined, isObject} from "util";
+import {Reducer, Store} from "redux";
+import {isFunction, isNullOrUndefined, isUndefined} from "util";
 import {ReduxAction} from "./ReduxAction";
 import {addSagaHandler} from "./SagaManager";
 import {SagaHandler} from "./SagaHandler";
-
+import {convertFunctionNameByPrefix} from "./FindNameStragegy";
 
 /*
 *
@@ -55,6 +55,29 @@ export function createReduxHandler<T extends SagaHandler>(handler: T): T {
 
 
 /**
+ * 是否为一个generator
+ * @param prototype
+ * @return {any}
+ */
+function isGenerator(prototype) {
+    if (isNullOrUndefined(prototype)) {
+        return prototype;
+    }
+    const __proto__ = prototype["__proto__"];
+    if (isNullOrUndefined(__proto__)) {
+        return false;
+    }
+    return __proto__ && __proto__.constructor.name === "GeneratorFunctionPrototype";
+}
+
+
+/**
+ * 使用新的 state
+ * @type {string}
+ */
+export const USE_NEW_SATE: string = "__USE_NEW_SATE__";
+
+/**
  * 通过一个handler 创建一个reducer
  * @param handler
  * @return {Reducer<S>}
@@ -63,44 +86,103 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
 
     const handlerName = handler.constructor.name;
 
-    console.log("创建reducer", handlerName);
 
+    console.log("创建reducer", handlerName, handler['name']);
+
+
+    const actions = {};
+
+    const defaultState = handler.default;
+
+    if (isNullOrUndefined(handler.actionNames)) {
+        handler.actionNames = new Map<string, string>();
+    }
+
+    for (const key in handler) {
+        if (key === "actionNames" || key === "default") {
+            continue;
+        }
+        //固定属性
+        actions[key] = handler[key];
+    }
+
+    //获取原型链
+    const handlerPrototype = Object.getPrototypeOf(handler);
+
+    //获取原型链上的属性名称
+    const keys = Object.getOwnPropertyNames(handlerPrototype);
+
+    console.log(keys, handlerPrototype);
+    keys.filter(key => key !== "constructor").forEach(key => {
+        const handle = handlerPrototype[key];
+        if (isNullOrUndefined(handle)) {
+            console.log(`${handlerName}的${key} is null`);
+            return;
+        }
+        if (isGenerator(handle.prototype)) {
+            //跳过 saga 处理者
+            console.log("--generator function-->", key)
+        } else {
+            //action
+            actions[`${handlerName}.${key}`] = handle;
+            if (key.startsWith("set")) {
+                let getFuncName = convertFunctionNameByPrefix(key);
+                if (getFuncName in handlerPrototype) {
+                    handler.actionNames.set(getFuncName, key);
+                }
+            }
+        }
+    });
+
+    console.info("===============actions-----------", actions);
+
+    //加入到cache中
     return function (state: S, action: ReduxAction): S {
-
         const {type, payload} = action;
 
-        if (isNullOrUndefined(state)) {
-            //如果是初始化
-            return handler.default;
+        if (type.endsWith(SAGA_ACTION_TYPE_SUFFIX)) {
+            //saga的分发
+            // console.log("-----------------saga--忽略------------------", type);
+            return state;
         }
 
-        const methodName = type.split(".")[1];
-        console.log("methodName ", methodName);
-        if (methodName in handler) {
-            console.log("reducer ", type, payload);
-            //如果请求处理的key不存在
-            // throw new Error(`${handlerName} 中不存在 type = ${type} 的处理`);
-            if (!isObject(state)) {
-                //不是对象类型
-                return payload;
-            }
-            return {
-                ...state as any,
-                ...payload
-            } as S;
-        } else {
-            console.warn(`${handlerName} 中不存在 type = ${type} 的处理`, state);
-            return handler.default;
+        let handle = actions[type];
+
+        if (isUndefined(handle)) {
+            //action 不存在使用默认的 state
+            return defaultState;
         }
+
+        if (handle === USE_NEW_SATE) {
+            //总是使用新的state
+            return action.payload;
+        }
+
+        if (isFunction(handle)) {
+            return handle(state, payload);
+        }
+
+        return handle;
+
     }
 
 }
 
+/**
+ * 获取reducer action的名称
+ * @param {string} type saga 中 action 的名称
+ * @return {string}
+ */
 export function getReducerTypeNameBySaga(type: string) {
 
     return type.replace(SAGA_ACTION_TYPE_SUFFIX, "")
 }
 
+/**
+ * 与 getReducerTypeNameBySaga作用相反
+ * @param {string} type
+ * @return {string}
+ */
 export function getSagaTypeNameByReducer(type: string) {
 
     return `${type}${SAGA_ACTION_TYPE_SUFFIX}`;
@@ -117,6 +199,7 @@ export function registerStoreByProxy(store: Store<any>) {
     DEFAULT_STORE = store;
 }
 
+
 /**
  * 代理的 分发器
  * @param {string} type
@@ -125,7 +208,7 @@ export function registerStoreByProxy(store: Store<any>) {
 function proxyDispatchBySaga<T>(type: string, payload: T): ReduxAction {
 
 
-    console.log(`dispatch-->${getSagaTypeNameByReducer(type)}`, payload);
+    console.log(`---dispatch--->${getSagaTypeNameByReducer(type)}`);
 
     return DEFAULT_STORE.dispatch({
         type: getSagaTypeNameByReducer(type),
