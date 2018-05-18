@@ -77,6 +77,16 @@ function isGenerator(prototype) {
  */
 export const USE_NEW_SATE: string = "__USE_NEW_SATE__";
 
+function addAction(actions, handlerName, key, handle, handlerPrototype, handler: SagaHandler) {
+    actions[`${handlerName}.${key}`] = handle;
+    if (key.startsWith("set")) {
+        let getFuncName = convertFunctionNameByPrefix(key);
+        if (getFuncName in handlerPrototype) {
+            handler.actionNames.set(getFuncName, key);
+        }
+    }
+}
+
 /**
  * 通过一个handler 创建一个reducer
  * @param handler
@@ -107,13 +117,7 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
             continue;
         }
         //固定属性
-        actions[key] = handler[key];
-        if (key.startsWith("set")) {
-            let getFuncName = convertFunctionNameByPrefix(key);
-            if (getFuncName in handlerPrototype) {
-                handler.actionNames.set(getFuncName, key);
-            }
-        }
+        addAction(actions, handlerName, key, handler[key], handlerPrototype, handler);
     }
     // console.log(keys, handlerPrototype);
     keys.filter(key => key !== "constructor").forEach(key => {
@@ -127,13 +131,7 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
             console.log("--generator function-->", key)
         } else {
             //action
-            actions[`${handlerName}.${key}`] = handle;
-            if (key.startsWith("set")) {
-                let getFuncName = convertFunctionNameByPrefix(key);
-                if (getFuncName in handlerPrototype) {
-                    handler.actionNames.set(getFuncName, key);
-                }
-            }
+            addAction(actions, handlerName, key, handle, handlerPrototype, handler);
         }
     });
 
@@ -148,10 +146,9 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
             // console.log("-----------------saga--忽略------------------", type);
             return state;
         }
+        let handle = actions[type];
 
-        let handle = actions[type.split(".")[1]];
-
-        // console.log("-----------接收到一个action----->", type, handle);
+        console.log("-----------接收到一个action----->", type, actions);
 
         if (isUndefined(handle)) {
             //action 不存在使用默认的 state
