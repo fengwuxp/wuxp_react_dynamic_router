@@ -1,7 +1,7 @@
 import {call, fork, put, takeEvery} from "redux-saga/effects";
-import {isFunction, isNullOrUndefined} from "util";
-import {ReduxAction} from "../../proxy/redux/ReduxReducer";
-import {getReducerTypeNameBySaga, SAGA_ACTION_TYPE_SUFFIX} from "../../proxy/redux/ProxyReduxAction";
+import {isFunction, isNullOrUndefined, isUndefined} from "util";
+import {getReducerTypeNameBySaga, SAGA_ACTION_TYPE_SUFFIX} from "./ProxyReduxAction";
+import {ReduxAction} from "./ReduxAction";
 
 
 /**
@@ -83,7 +83,13 @@ export function createRootSaga() {
             if (isFunction(sagaAction)) {
                 //以非阻塞的形式调用
                 console.log(`执行saga 任务-> ${type}`);
-                const result = yield call(sagaAction, payload, reducerTypeName);
+                let result = yield call(sagaAction, payload, reducerTypeName);
+
+                //如果action 只是单纯的返回state，可以不做实现
+                if (isUndefined(result)) {
+                    console.log("默认策略");
+                    result = payload;
+                }
 
                 console.log(`更新 saga 任务-> 结果到store  type=${reducerTypeName}`, result);
                 //更新state

@@ -1,6 +1,8 @@
-import {ReduxAction} from "./ReduxReducer";
-import {Reducer, Store} from "redux";
+import {Action, AnyAction, Reducer, Store} from "redux";
 import {isNullOrUndefined, isObject} from "util";
+import {ReduxAction} from "./ReduxAction";
+import {addSagaHandler} from "./SagaManager";
+import {SagaHandler} from "./SagaHandler";
 
 
 /*
@@ -23,7 +25,9 @@ import {isNullOrUndefined, isObject} from "util";
 export const SAGA_ACTION_TYPE_SUFFIX: string = "__SAGA";
 
 
-export function createReduxHandler<T extends object=object>(handler: T): T {
+export function createReduxHandler<T extends SagaHandler>(handler: T): T {
+
+    addSagaHandler(handler);
 
     const handlerName = handler.constructor.name;
 
@@ -34,7 +38,7 @@ export function createReduxHandler<T extends object=object>(handler: T): T {
             return function (...params) {
 
                 //分发到saga
-                proxyDispatchBySaga(`${handlerName}.${p}`, params[0]);
+                return proxyDispatchBySaga(`${handlerName}.${p}`, params[0]);
             }
         },
 
@@ -43,6 +47,7 @@ export function createReduxHandler<T extends object=object>(handler: T): T {
             return true;
         }
     };
+
 
     return new Proxy(handler, proxyHandler);
 
@@ -54,7 +59,7 @@ export function createReduxHandler<T extends object=object>(handler: T): T {
  * @param handler
  * @return {Reducer<S>}
  */
-export function createReducerByHandler<S>(handler): Reducer<S> {
+export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
 
     const handlerName = handler.constructor.name;
 
@@ -87,8 +92,6 @@ export function createReducerByHandler<S>(handler): Reducer<S> {
             console.warn(`${handlerName} 中不存在 type = ${type} 的处理`, state);
             return handler.default;
         }
-
-
     }
 
 }
@@ -103,8 +106,12 @@ export function getSagaTypeNameByReducer(type: string) {
     return `${type}${SAGA_ACTION_TYPE_SUFFIX}`;
 }
 
-let DEFAULT_STORE;
+let DEFAULT_STORE: Store<any>;
 
+/**
+ * 注册一个store
+ * @param {Store<any>} store
+ */
 export function registerStoreByProxy(store: Store<any>) {
 
     DEFAULT_STORE = store;
@@ -113,15 +120,14 @@ export function registerStoreByProxy(store: Store<any>) {
 /**
  * 代理的 分发器
  * @param {string} type
- * @param payload
- * @param {Store<any>} store
+ * @param {T}payload
  */
-function proxyDispatchBySaga(type: string, payload: any) {
+function proxyDispatchBySaga<T>(type: string, payload: T): ReduxAction {
 
 
     console.log(`dispatch-->${getSagaTypeNameByReducer(type)}`, payload);
 
-    DEFAULT_STORE.dispatch({
+    return DEFAULT_STORE.dispatch({
         type: getSagaTypeNameByReducer(type),
 
         /**
