@@ -25,14 +25,18 @@ export function TargetAction(action: Function): any {
     }
 }
 
-
+/**
+ * 默认的action，总是会返回新的state
+ * @return {any}
+ * @constructor
+ */
 export function DefaultAction(): any {
 
     return function (target: SagaHandler, name: string, descriptor: PropertyDescriptor): any {
 
         // console.log("---------target-------", target, name,action);
         target[name] = function (sate: any, newState: any) {
-            return sate;
+            return newState;
         };
         addActionNameMaps(target, name, name);
 

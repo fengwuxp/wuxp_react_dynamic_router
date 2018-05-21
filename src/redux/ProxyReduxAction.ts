@@ -25,7 +25,13 @@ import {convertFunctionNameByPrefix} from "./FindNameStragegy";
 export const SAGA_ACTION_TYPE_SUFFIX: string = "__SAGA";
 
 
-export function createReduxHandler<T extends SagaHandler>(handler: T): T {
+/**
+ * 创建一个 redux handler
+ * @param {T} handler
+ * @param {boolean} pureAction 是否为一个纯的 action(即没有一部操作)
+ * @return {T}
+ */
+export function createReduxHandler<T extends SagaHandler>(handler: T, pureAction: boolean = false): T {
 
     addSagaHandler(handler);
 
@@ -37,8 +43,8 @@ export function createReduxHandler<T extends SagaHandler>(handler: T): T {
 
             return function (...params) {
 
-                //分发到saga
-                return proxyDispatchBySaga(`${handlerName}.${p}`, params[0]);
+                //分发
+                return proxyDispatchBySaga(`${handlerName}.${p}`, params[0], pureAction);
             }
         },
 
@@ -148,7 +154,7 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
         }
         let handle = actions[type];
 
-        console.log("-----------接收到一个action----->", type, actions);
+        console.log("-----------接收到一个action----->", type, state, action);
 
         if (isUndefined(handle)) {
             //action 不存在使用默认的 state
@@ -206,14 +212,22 @@ export function registerStoreByProxy(store: Store<any>) {
  * 代理的 分发器
  * @param {string} type
  * @param {T}payload
+ * @param {boolean} pureAction 是否为一个action
  */
-function proxyDispatchBySaga<T>(type: string, payload: T): ReduxAction {
+function proxyDispatchBySaga<T>(type: string, payload: T, pureAction: boolean): ReduxAction {
 
 
-    console.log(`---dispatch--->${getSagaTypeNameByReducer(type)}`);
+    let byReducer;
+
+    if (pureAction) {
+        byReducer = type;
+    } else {
+        byReducer = getSagaTypeNameByReducer(type);
+    }
+    console.log(`---dispatch--->${byReducer}`);
 
     return DEFAULT_STORE.dispatch({
-        type: getSagaTypeNameByReducer(type),
+        type: byReducer,
 
         /**
          * payload 用于传输数据
