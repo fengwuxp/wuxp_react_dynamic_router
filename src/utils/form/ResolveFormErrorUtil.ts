@@ -1,7 +1,3 @@
-/*
- * 解析表单验证失败的错误
- */
-
 interface FormError {
 
     readonly [key: string]: {
@@ -12,6 +8,11 @@ interface FormError {
     }
 }
 
+/**
+ * 解析表单验证失败的错误信息
+ * @param {FormError} error
+ * @return {string}
+ */
 export function resolveFormErrorMessage(error: FormError): string {
 
     const key = Object.keys(error)[0];

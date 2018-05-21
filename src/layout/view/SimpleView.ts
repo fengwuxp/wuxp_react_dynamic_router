@@ -12,7 +12,7 @@ import * as React from "react";
  *     <Fotter></Fotter>
  * </View>
  */
-export interface SimpleView extends Layout, UIBuilder {
+export interface SimpleView extends Layout {
 
     renderHeader: () => React.ReactNode;
 

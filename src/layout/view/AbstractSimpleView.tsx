@@ -1,14 +1,19 @@
 import {SimpleView} from "./SimpleView";
 import React from "react";
-import FlexView from "../../components/view/FliexView";
+import FlexView from "../../components/view/FlexView";
 import {isNullOrUndefined} from "util";
 
 
-export interface ViewBuildState {
+export interface ViewProps {
 
-
-    buildComponents: React.ReactNode | React.ReactNode[];
+    [key: string]: any
 }
+
+export interface ViewState {
+
+    [key: string]: any
+}
+
 
 const viewBuilderStyle: React.CSSProperties = {
     position: "relative",
@@ -16,33 +21,12 @@ const viewBuilderStyle: React.CSSProperties = {
 };
 
 
-export default abstract class AbstractSimpleView<P, S extends ViewBuildState> extends React.Component<P, S> implements SimpleView {
+export default abstract class AbstractSimpleView<P extends ViewProps, S extends ViewState> extends React.Component<P, S> implements SimpleView {
 
 
     constructor(props: P, context: any) {
         super(props, context);
-
-        this.state = {} as S;
     }
-
-    appendMaskComponent = (component: React.ReactNode): this => {
-        // let {components} = this.state;
-        // components = component;
-
-        //直接替换
-        this.setState({
-            buildComponents: component
-        });
-
-        return this;
-    };
-
-    removeMaskComponent = () => {
-        //直接清空
-        this.setState({
-            buildComponents: null
-        });
-    };
 
 
     abstract renderBody: () => React.ReactNode;
@@ -54,33 +38,17 @@ export default abstract class AbstractSimpleView<P, S extends ViewBuildState> ex
 
     render() {
 
-
-        return <div key={"flex_view"}
-                    style={viewBuilderStyle}>
-            <FlexView key={"flex_view"}
-                      style={viewBuilderStyle}
-                      header={this.renderHeader()}
-                      footer={this.renderFooter()}>
-                {this.renderBody()}
-            </FlexView>
-            {this.maskView()}
-        </div>
+        return <FlexView key={`${AbstractSimpleView.name}_flex_view`}
+                         style={viewBuilderStyle}
+                         header={this.renderHeader()}
+                         footer={this.renderFooter()}>
+            {this.renderBody()}
+        </FlexView>
     }
 
-    protected maskView = () => {
-
-        const {buildComponents} = this.state;
-
-        if (isNullOrUndefined(buildComponents)) {
-            return null;
-        }
-
-        return <div key="mask_view" style={{...this.getMaskStyle(), position: "absolute"}}>{buildComponents}</div>;
-    };
-
-
-    protected getMaskStyle = (): React.CSSProperties => {
-
-        return {};
+    protected back = () => {
+        window.history.back();
     }
+
+
 }
