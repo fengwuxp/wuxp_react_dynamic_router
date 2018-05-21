@@ -1,5 +1,5 @@
 import {ReduxRouterProps} from "../redux/ReduxRouterProps";
-import {FormComponentProps} from "antd/lib/form";
+import {FormComponentProps} from "antd/lib/form/Form";
 
 
 /**
