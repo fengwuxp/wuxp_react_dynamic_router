@@ -43,8 +43,21 @@ export function createReduxHandler<T extends SagaHandler>(handler: T, pureAction
 
             return function (...params) {
 
+                let isPureAction = pureAction;
+
+                if (target.actionNames && !isPureAction) {
+                    //如果handler不是一个纯粹的action handler
+                    // 则判断该方法是否在actionNames中，如果在存在说明这个方法是一个纯粹的action
+                    let values = target.actionNames.values();
+                    for (let item of values) {
+                        if (item === p) {
+                            isPureAction = true
+                        }
+                    }
+                }
+
                 //分发
-                return proxyDispatchBySaga(`${handlerName}.${p}`, params[0], pureAction);
+                return proxyDispatchBySaga(`${handlerName}.${p}`, params[0], isPureAction);
             }
         },
 
