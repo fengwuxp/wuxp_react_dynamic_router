@@ -1,7 +1,7 @@
 import {SimpleView} from "./SimpleView";
 import React from "react";
 import FlexView from "../../components/view/FlexView";
-import {isNullOrUndefined} from "util";
+import {Layout} from "../Layout";
 
 
 export interface ViewProps {
@@ -20,8 +20,11 @@ const viewBuilderStyle: React.CSSProperties = {
     flex: 1
 };
 
-
-export default abstract class AbstractSimpleView<P extends ViewProps, S extends ViewState> extends React.Component<P, S> implements SimpleView {
+/**
+ * 基础的flex视图
+ */
+export default abstract class AbstractSimpleView<P extends ViewProps, S extends ViewState> extends React.Component<P, S>
+    implements SimpleView, Layout {
 
 
     constructor(props: P, context: any) {
@@ -29,15 +32,14 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
     }
 
 
-    abstract renderBody: () => React.ReactNode;
+    renderBody = (): React.ReactNode => null;
 
-    abstract renderFooter: () => React.ReactNode;
+    renderFooter = (): React.ReactNode => null;
 
-    abstract renderHeader: () => React.ReactNode;
+    renderHeader = (): React.ReactNode => null;
 
 
     render() {
-
         return <FlexView key={`${AbstractSimpleView.name}_flex_view`}
                          style={viewBuilderStyle}
                          header={this.renderHeader()}
