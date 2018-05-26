@@ -32,6 +32,8 @@ const SAGA_ROOT_DEFAULT_PATTER = function (action: ReduxAction) {
 export function addSagaHandler(handler: SagaHandler) {
 
     // const handler = new actionHandler();
+
+
     SAGA_CACHE.set(handler.constructor.name, handler);
 
 }
@@ -89,6 +91,8 @@ export function createRootSaga() {
             if (isFunction(handler)) {
                 //以非阻塞的形式调用
                 console.log(`执行saga 任务-> ${type}`, handler.name);
+
+                //将 actionName传入，便于方法内部的自身调用
                 let result = yield call(handler, payload, actionName);
 
                 //如果action 只是单纯的返回state，可以不做实现
