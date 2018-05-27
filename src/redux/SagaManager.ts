@@ -31,10 +31,8 @@ const SAGA_ROOT_DEFAULT_PATTER = function (action: ReduxAction) {
  */
 export function addSagaHandler(handler: SagaHandler) {
 
-    // const handler = new actionHandler();
 
-
-    SAGA_CACHE.set(handler.constructor.name, handler);
+    SAGA_CACHE.set(handler.constructorName || handler.constructor.name, handler);
 
 }
 

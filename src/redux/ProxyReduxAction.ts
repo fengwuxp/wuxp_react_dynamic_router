@@ -28,14 +28,13 @@ export const SAGA_ACTION_TYPE_SUFFIX: string = "__SAGA";
 /**
  * 创建一个 redux handler
  * @param {T} handler
- * @param {boolean} pureAction 是否为一个纯的 action(即没有一部操作)
  * @return {T}
  */
-export function createReduxHandler<T extends SagaHandler>(handler: T, pureAction: boolean = false): T {
+export function createReduxHandler<T extends SagaHandler>(handler: T): T {
 
     addSagaHandler(handler);
 
-    const handlerName = handler.constructor.name;
+    const handlerName = handler.constructorName || handler.constructor.name;
 
     const proxyHandler: ProxyHandler<T> = {
 
@@ -43,18 +42,7 @@ export function createReduxHandler<T extends SagaHandler>(handler: T, pureAction
 
             return function (...params) {
 
-                let isPureAction = pureAction;
-
-                if (target.actionNames && !isPureAction) {
-                    //如果handler不是一个纯粹的action handler
-                    // 则判断该方法是否在actionNames中，如果在存在说明这个方法是一个纯粹的action
-                    let values = target.actionNames.values();
-                    for (let item of values) {
-                        if (item === p) {
-                            isPureAction = true
-                        }
-                    }
-                }
+                let isPureAction = !target[p].generatorFunction;
 
                 //分发
                 return proxyDispatchBySaga(`${handlerName}.${p}`, params[0], isPureAction);
@@ -75,18 +63,26 @@ export function createReduxHandler<T extends SagaHandler>(handler: T, pureAction
 
 /**
  * 是否为一个generator
- * @param prototype
+ * @param {SagaHandler} handler
+ * @param handle
  * @return {any}
  */
-function isGenerator(prototype) {
-    if (isNullOrUndefined(prototype)) {
-        return prototype;
-    }
-    const __proto__ = prototype["__proto__"];
-    if (isNullOrUndefined(__proto__)) {
-        return false;
-    }
-    return __proto__ && __proto__.constructor.name === "GeneratorFunctionPrototype";
+function isGenerator(handler: SagaHandler, handle: Function) {
+
+    //使用 generatorFunctionNames判断
+    // let handleFnName = handle.name;
+    // return handler.generatorFunctionNames.some((name => handleFnName === name));
+
+    // const prototype = handle.prototype;
+    // if (isNullOrUndefined(prototype)) {
+    //     return prototype;
+    // }
+    // const __proto__ = prototype["__proto__"];
+    // if (isNullOrUndefined(__proto__)) {
+    //     return false;
+    // }
+    // //依赖构造函数名称
+    // return __proto__ && __proto__.constructor.name === "GeneratorFunctionPrototype";
 }
 
 
@@ -113,7 +109,8 @@ function addAction(actions, handlerName, key, handle, handlerPrototype, handler:
  */
 export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
 
-    const handlerName = handler.constructor.name;
+    //获取handler的名称
+    const handlerName = handler.constructorName || handler.constructor.name;
 
     console.log("创建reducer", handlerName, handler['name']);
 
@@ -135,7 +132,7 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
         if (key === "actionNames" || key === "default") {
             continue;
         }
-        //固定属性
+        //固有属性
         addAction(actions, handlerName, key, handler[key], handlerPrototype, handler);
     }
     // console.log(keys, handlerPrototype);
@@ -145,7 +142,7 @@ export function createReducerByHandler<S>(handler: SagaHandler): Reducer<S> {
             console.log(`${handlerName}的${key} is null`);
             return;
         }
-        if (isGenerator(handle.prototype)) {
+        if (handle.generatorFunction) {
             //跳过 saga 处理者
             console.log("--generator function-->", key)
         } else {

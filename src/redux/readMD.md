@@ -2,7 +2,10 @@
 
 ##### 使用说明
 
-###### 由于有使用到 constructor.name 所以在打包时 uglifyJsPlugin需要如下设置：
+
+#####  1: 已装饰器的方式进行处理，不依赖打包配置 参见 test/handler
+
+###### 2: 依赖constructor.name 所以在压缩打包时 uglifyJsPlugin需要如下设置：
             
             
                    /**
@@ -183,4 +186,4 @@
 ##### 更多例子参考：https://github.com/fengwuxp/wuxp_antd_manager/tree/master/src/handler             
 
 
-##### TODO 考虑已装饰器的方式进行处理，不依赖打包配置
+

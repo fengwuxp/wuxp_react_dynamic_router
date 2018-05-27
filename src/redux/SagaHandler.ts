@@ -16,6 +16,16 @@ export interface SagaHandler<T=any> {
      */
     actionNames?: Map<string, string>;
 
+    /**
+     * generator 函数方法的名称
+     */
+    // generatorFunctionNames?: string[];
+
+    /**
+     * 构造器名称
+     */
+    constructorName?: string;
+
 
     // [key: string]: (...p) => ReduxAction<T>;
 }
