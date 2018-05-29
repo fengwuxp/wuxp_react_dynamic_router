@@ -6,7 +6,7 @@ export interface SimpleQueryViewState extends ViewState {
 }
 
 /**
- * 查询视图
+ * 简单的查询视图
  *
  * 仅支持 单个对象的查询
  * @param Q 查询长参数

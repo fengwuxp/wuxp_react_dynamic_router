@@ -1,5 +1,5 @@
 import {SimpleView} from "./SimpleView";
-import React from "react";
+import React, {ErrorInfo} from "react";
 import FlexView from "../../components/view/FlexView";
 import {Layout} from "../Layout";
 
@@ -12,6 +12,8 @@ export interface ViewProps {
 export interface ViewState {
 
     [key: string]: any
+
+    containerStyle?: React.CSSProperties;
 }
 
 
@@ -41,14 +43,20 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
 
     render() {
         return <FlexView key={`${AbstractSimpleView.name}_flex_view`}
-                         style={viewBuilderStyle}
+                         style={Object.assign({}, viewBuilderStyle, this.state ? this.state.containerStyle : {})}
                          header={this.renderHeader()}
                          footer={this.renderFooter()}>
             {this.renderBody()}
         </FlexView>
     }
 
-    protected back = () => {
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+        console.error("-------error-----", error);
+        console.error("-------errorInfo-----", errorInfo);
+    }
+
+
+    protected goBack = () => {
         window.history.back();
     }
 
