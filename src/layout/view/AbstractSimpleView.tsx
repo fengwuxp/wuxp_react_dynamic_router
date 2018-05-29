@@ -2,7 +2,11 @@ import {SimpleView} from "./SimpleView";
 import React, {ErrorInfo} from "react";
 import FlexView from "../../components/view/FlexView";
 import {Layout} from "../Layout";
+// import {push} from "react-router-redux";
+import BrowserNavigatorFactory from "../../factory/navigator/web/BrowserNavigatorFactory";
+import "./view.less";
 
+const history = BrowserNavigatorFactory.get();
 
 export interface ViewProps {
 
@@ -18,8 +22,7 @@ export interface ViewState {
 
 
 const viewBuilderStyle: React.CSSProperties = {
-    position: "relative",
-    flex: 1
+    position: "relative"
 };
 
 /**
@@ -42,7 +45,9 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
 
 
     render() {
+
         return <FlexView key={`${AbstractSimpleView.name}_flex_view`}
+                         className={"d_flex flex_cell flex_column"}
                          style={Object.assign({}, viewBuilderStyle, this.state ? this.state.containerStyle : {})}
                          header={this.renderHeader()}
                          footer={this.renderFooter()}>
@@ -52,13 +57,13 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("-------error-----", error);
-        console.error("-------errorInfo-----", errorInfo);
+        console.error("-------errorInfo-----", errorInfo)
     }
 
 
-    protected goBack = () => {
-        window.history.back();
-    }
+    protected goBack = history.goBack;
+
+    protected to = history.push;
 
 
 }

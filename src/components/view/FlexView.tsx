@@ -8,6 +8,8 @@ export interface FlexViewProps {
 
     style?: React.CSSProperties;
 
+    className?: string;
+
     header?: React.ReactNode;
 
     footer?: React.ReactNode;
@@ -37,7 +39,8 @@ export default class FlexView extends React.Component<FlexViewProps, any> {
         // }
 
         return (
-            <div style={flexCell}>
+            <div style={this.props.style}
+                 className={this.props.className}>
                 {this.props.header}
                 {this.props.children}
                 {this.props.footer}
