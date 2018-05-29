@@ -12,7 +12,6 @@ export  type QueryCallBack<E=any> = (p: Promise<E>) => Promise<E>
  *
  * 仅支持 单个对象的查询
  * @param Q 查询长参数
- * @param E 查询对象的泛型
  */
 export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
     E,
@@ -22,10 +21,16 @@ export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
 
     protected queryHelper: SimpleQueryHelper<Q>;
 
+    /**
+     * 是否分页
+     */
+    protected isPaging: boolean;
 
-    constructor(props: T, context: any) {
+
+    constructor(props: T, context: any, isPaging = true) {
         super(props, context);
-        this.queryHelper = new SimpleQueryHelper<Q>();
+        this.queryHelper = new SimpleQueryHelper<Q>(isPaging);
+        this.isPaging = isPaging;
     }
 
     /**
@@ -39,11 +44,6 @@ export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
         this.queryHelper.lockStatusQuery(this.executeQuery);
     };
 
-    /**
-     * 执行查询
-     * @param {Q} req 查询参数
-     * @param {QueryCallBack<E>} callback 执行的回调
-     */
     protected abstract executeQuery: (req: Q, callback: QueryCallBack<E>) => void
 
 
@@ -74,14 +74,14 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
      * 查询是否分页
      * @type {boolean}
      */
-    protected isPaging: boolean = true;
+    protected isPaging: boolean;
 
     // protected queryQueue: Promise<any>[];
 
 
-    constructor() {
-        this._req = {} as Q;
-        this.restQuery();
+    constructor(isPaging: boolean) {
+        // this._req = {} as Q;
+        this.isPaging = isPaging;
     }
 
 
@@ -91,25 +91,25 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
 
     /**
      * 初始化
-     * @param {Q} req
-     * @param {boolean} isPaging 是否分页
+     * @param {Q} req页
      */
-    initQuery = (req: Q, isPaging: boolean = true) => {
-        this._req = Object.assign(this._req, isPaging ? DEFAULT_QUERY_CONDITION : {}, req);
-        this.isPaging = isPaging;
+    initQuery = (req: Q) => {
+        this._req = Object.assign({}, this.isPaging ? DEFAULT_QUERY_CONDITION : {}, req);
+        this.restQuery();
     };
 
     /**
-     * 锁定查询状态后在进行查询
+     * 锁定查询状态
      */
     public lockStatusQuery = (query: (req: Q, callback: QueryCallBack) => void): void => {
-        if (this.isLock()) {
+        if (this.isLoading()) {
             return;
         }
         this.queryStatus.loading = true;
 
-        return query(this._req, (p: Promise<any>) => {
+        query(this._req, (p: Promise<any>) => {
             return p.then((data) => {
+                console.log("================1===============")
                 this.unLockQueryStatus();
                 if (this.isPaging) {
                     //查询是否结束
@@ -131,7 +131,7 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
      * 是否处于查询状态中
      * @return {boolean}
      */
-    public isLock = (): boolean => {
+    public isLoading = (): boolean => {
         return this.queryStatus.loading || this.queryStatus.end;
     };
 
@@ -147,7 +147,9 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
      * 重置查询
      */
     public restQuery = () => {
-        this._req.queryPage = 1;
+        if (this.isPaging) {
+            this._req.queryPage = 1;
+        }
         this.queryStatus = {
             loading: false,
             end: false
