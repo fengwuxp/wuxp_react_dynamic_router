@@ -5,13 +5,17 @@ export interface SimpleQueryViewState extends ViewState {
 
 }
 
+export  type QueryCallBack<E=any> = (p: Promise<E>) => Promise<E>
+
 /**
  * 简单的查询视图
  *
  * 仅支持 单个对象的查询
  * @param Q 查询长参数
+ * @param E 查询对象的泛型
  */
 export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
+    E,
     T extends ViewProps,
     S extends SimpleQueryViewState>
     extends AbstractSimpleView<T, S> {
@@ -35,7 +39,12 @@ export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
         this.queryHelper.lockStatusQuery(this.executeQuery);
     };
 
-    protected abstract executeQuery: (req: Q) => Promise<any>;
+    /**
+     * 执行查询
+     * @param {Q} req 查询参数
+     * @param {QueryCallBack<E>} callback 执行的回调
+     */
+    protected abstract executeQuery: (req: Q, callback: QueryCallBack<E>) => void
 
 
 }
@@ -91,27 +100,29 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
     };
 
     /**
-     * 锁定查询状态
+     * 锁定查询状态后在进行查询
      */
-    public lockStatusQuery = (query: (req: Q) => Promise<any>) => {
-        if (this.isLoading()) {
+    public lockStatusQuery = (query: (req: Q, callback: QueryCallBack) => void): void => {
+        if (this.isLock()) {
             return;
         }
         this.queryStatus.loading = true;
 
-        query(this._req).then((data) => {
-            this.unLockQueryStatus();
-            if (this.isPaging) {
-                //查询是否结束
-                this.queryIsEnd(data);
-                this.nextPage();
-            } else {
-                this.queryStatus.end = true;
-            }
-            return data;
-        }).catch((e) => {
-            this.unLockQueryStatus();
-            return e;
+        return query(this._req, (p: Promise<any>) => {
+            return p.then((data) => {
+                this.unLockQueryStatus();
+                if (this.isPaging) {
+                    //查询是否结束
+                    this.queryIsEnd(data);
+                    this.nextPage();
+                } else {
+                    this.queryStatus.end = true;
+                }
+                return data;
+            }).catch((e) => {
+                this.unLockQueryStatus();
+                return e;
+            });
         });
     };
 
@@ -120,7 +131,7 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
      * 是否处于查询状态中
      * @return {boolean}
      */
-    public isLoading = (): boolean => {
+    public isLock = (): boolean => {
         return this.queryStatus.loading || this.queryStatus.end;
     };
 
