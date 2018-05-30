@@ -3,6 +3,8 @@ import {UIBuilder} from "../../ui/UIBuilder";
 import * as React from "react";
 
 
+
+
 /**
  * 简单的通用view
  * 基于flex布局将页面简单的分为
@@ -13,6 +15,8 @@ import * as React from "react";
  * </View>
  */
 export interface SimpleView extends Layout {
+
+
 
     renderHeader: () => React.ReactNode;
 

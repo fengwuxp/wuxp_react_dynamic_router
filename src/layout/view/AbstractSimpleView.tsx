@@ -20,6 +20,21 @@ export interface ViewState {
     containerStyle?: React.CSSProperties;
 }
 
+export interface ViewParams {
+
+    [key: string]: any;
+}
+
+
+export interface ViewRenderHelper {
+
+    /**
+     *  render helper
+     * @param p
+     * @return {React.ReactNode}
+     */
+    renderHeader: (...p) => React.ReactNode;
+}
 
 const viewBuilderStyle: React.CSSProperties = {
     position: "relative"
@@ -31,6 +46,15 @@ const viewBuilderStyle: React.CSSProperties = {
 export default abstract class AbstractSimpleView<P extends ViewProps, S extends ViewState> extends React.Component<P, S>
     implements SimpleView, Layout {
 
+    /**
+     * 页面收的参数
+     */
+    protected params: ViewParams;
+
+    /**
+     * render helper
+     */
+    protected renderHelper: ViewRenderHelper;
 
     constructor(props: P, context: any) {
         super(props, context);

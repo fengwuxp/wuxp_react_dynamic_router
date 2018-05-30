@@ -41,10 +41,15 @@ export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
         if (rest) {
             this.queryHelper.restQuery();
         }
-        this.queryHelper.lockStatusQuery(this.executeQuery);
+        this.queryHelper.lockStatusQuery(this.executeQuery, rest);
     };
 
-    protected abstract executeQuery: (req: Q, callback: QueryCallBack<E>) => void
+    /**
+     * @param {Q} req
+     * @param {boolean} isRest 是否需要重置
+     * @param {QueryCallBack} callback
+     */
+    protected abstract executeQuery: (req: Q, isRest: boolean, callback: QueryCallBack<E>) => void
 
 
 }
@@ -101,13 +106,13 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
     /**
      * 锁定查询状态
      */
-    public lockStatusQuery = (query: (req: Q, callback: QueryCallBack) => void): void => {
+    public lockStatusQuery = (query: (req: Q, isRest: boolean, callback: QueryCallBack) => void, rest: boolean): void => {
         if (this.isLoading()) {
             return;
         }
         this.queryStatus.loading = true;
 
-        query(this._req, (p: Promise<any>) => {
+        query(this._req, rest, (p: Promise<any>) => {
             return p.then((data) => {
                 console.log("================1===============")
                 this.unLockQueryStatus();
