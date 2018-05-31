@@ -5,12 +5,22 @@ import {Layout} from "../Layout";
 // import {push} from "react-router-redux";
 import BrowserNavigatorFactory from "../../factory/navigator/web/BrowserNavigatorFactory";
 import "./view.less";
+import {LocationDescriptorObject} from "history";
+import {stringify} from "querystring";
+import {ReduxRouterProps} from "../../model/redux/ReduxRouterProps";
+import {FormComponentProps} from "antd/lib/form/Form";
+import {isString} from "util";
 
 const history = BrowserNavigatorFactory.get();
 
-export interface ViewProps {
+export interface ViewProps extends ReduxRouterProps {
 
-    [key: string]: any
+    [key: string]: any;
+}
+
+export interface ViewFormProps extends ViewProps, FormComponentProps {
+
+    [key: string]: any;
 }
 
 export interface ViewState {
@@ -36,6 +46,11 @@ export interface ViewRenderHelper {
     renderHeader: (...p) => React.ReactNode;
 }
 
+export interface ViewLocationDescriptorObject extends LocationDescriptorObject {
+
+    params: {};
+}
+
 const viewBuilderStyle: React.CSSProperties = {
     position: "relative"
 };
@@ -45,11 +60,6 @@ const viewBuilderStyle: React.CSSProperties = {
  */
 export default abstract class AbstractSimpleView<P extends ViewProps, S extends ViewState> extends React.Component<P, S>
     implements SimpleView, Layout {
-
-    /**
-     * 页面收的参数
-     */
-    protected params: ViewParams;
 
     /**
      * render helper
@@ -87,7 +97,14 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
 
     protected goBack = history.goBack;
 
-    protected to = history.push;
+    protected to = (location: ViewLocationDescriptorObject | string) => {
+
+        if (!isString(location)) {
+            location.search = stringify(location.params);
+        }
+
+        history.push(location as any);
+    };
 
 
 }
