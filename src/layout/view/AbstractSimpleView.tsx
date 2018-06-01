@@ -88,7 +88,13 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
         console.error("-------errorInfo-----", errorInfo)
     }
 
-    protected renderWrapper = (childrn: React.ReactNode) => childrn;
+    protected renderWrapper = (children: React.ReactNode) => {
+
+        // console.log("------renderWrapper--------", children);
+
+        return children;
+    };
+
 
 
     protected goBack = history.goBack;
