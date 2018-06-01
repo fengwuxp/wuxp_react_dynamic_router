@@ -80,19 +80,15 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
 
     render() {
 
-        return <FlexView key={`${AbstractSimpleView.name}_flex_view`}
-                         className={"d_flex flex_cell flex_column"}
-                         style={Object.assign({}, viewBuilderStyle, this.state ? this.state.containerStyle : {})}
-                         header={this.renderHeader()}
-                         footer={this.renderFooter()}>
-            {this.renderBody()}
-        </FlexView>
+        return this.renderWrapper(this.renderContent());
     }
 
     componentDidCatch(error: Error, errorInfo: ErrorInfo) {
         console.error("-------error-----", error);
         console.error("-------errorInfo-----", errorInfo)
     }
+
+    protected renderWrapper = (childrn: React.ReactNode) => childrn;
 
 
     protected goBack = history.goBack;
@@ -106,5 +102,11 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
         history.push(location as any);
     };
 
+
+    private renderContent = () => <FlexView key={`${AbstractSimpleView.name}_flex_view`}
+                                            className={"d_flex flex_cell flex_column"}
+                                            style={Object.assign({}, viewBuilderStyle, this.state ? this.state.containerStyle : {})}
+                                            header={this.renderHeader()}
+                                            footer={this.renderFooter()}>{this.renderBody()}</FlexView>
 
 }
