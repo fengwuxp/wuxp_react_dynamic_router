@@ -4,6 +4,8 @@ import {ReduxAction} from "./ReduxAction";
 import {addSagaHandler} from "./SagaManager";
 import {SagaHandler} from "./SagaHandler";
 import {convertFunctionNameByPrefix} from "./FindNameStragegy";
+import {go, goBack, goForward, push, replace, RouterAction} from "react-router-redux";
+import {LocationDescriptor, LocationState} from "history";
 
 /*
 *
@@ -246,3 +248,14 @@ function proxyDispatchBySaga<T>(type: string, payload: T, pureAction: boolean): 
     });
 }
 
+
+/**
+ * 路由持有者
+ */
+export const routerHandler = {
+    push: (location: LocationDescriptor, state?: LocationState) => DEFAULT_STORE.dispatch(push(location, state)),
+    replace: (location: LocationDescriptor, state?: LocationState) => DEFAULT_STORE.dispatch(replace(location, state)),
+    go: (n: number) => DEFAULT_STORE.dispatch(go(n)),
+    goBack: () => DEFAULT_STORE.dispatch(goBack()),
+    goForward: () => DEFAULT_STORE.dispatch(goForward()),
+};
