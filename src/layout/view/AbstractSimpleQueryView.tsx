@@ -37,11 +37,11 @@ export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
      * 已串行的方式查询
      * @param {boolean} rest 是否重置查询条件，默认 false
      */
-    protected serialQuery = (rest: boolean = false) => {
+    protected serialQuery = (rest: boolean = false): Promise<any> => {
         if (rest) {
             this.queryHelper.restQuery();
         }
-        this.queryHelper.lockStatusQuery(this.executeQuery, rest);
+        return this.queryHelper.lockStatusQuery(this.executeQuery, rest);
     };
 
     /**
@@ -49,7 +49,7 @@ export default abstract class AbstractSimpleQueryView<Q extends ApiQueryReq,
      * @param {boolean} isRest 是否需要重置
      * @param {QueryCallBack} callback
      */
-    protected abstract executeQuery: (req: Q, isRest: boolean, callback: QueryCallBack<E>) => void
+    protected abstract executeQuery: (req: Q, isRest: boolean, callback: QueryCallBack<E>) => Promise<any>
 
 
 }
@@ -106,15 +106,14 @@ class SimpleQueryHelper<Q extends ApiQueryReq=any> {
     /**
      * 锁定查询状态
      */
-    public lockStatusQuery = (query: (req: Q, isRest: boolean, callback: QueryCallBack) => void, rest: boolean): void => {
+    public lockStatusQuery = (query: (req: Q, isRest: boolean, callback: QueryCallBack) => Promise<any>, rest: boolean): Promise<any> => {
         if (this.isLoading()) {
             return;
         }
         this.queryStatus.loading = true;
 
-        query(this._req, rest, (p: Promise<any>) => {
+        return query(this._req, rest, (p: Promise<any>) => {
             return p.then((data) => {
-                console.log("================1===============")
                 this.unLockQueryStatus();
                 if (this.isPaging) {
                     //查询是否结束

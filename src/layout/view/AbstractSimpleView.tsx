@@ -59,7 +59,7 @@ const viewBuilderStyle: React.CSSProperties = {
  * 基础的flex视图
  */
 export default abstract class AbstractSimpleView<P extends ViewProps, S extends ViewState> extends React.Component<P, S>
-    implements SimpleView, Layout {
+    implements SimpleView {
 
     /**
      * render helper
