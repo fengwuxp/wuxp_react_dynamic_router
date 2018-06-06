@@ -1,5 +1,7 @@
 import {ApiQueryReq} from "typescript_api_sdk/src/api/model/ApiQueryReq";
 import {QueryCallBack} from "../../layout/view/AbstractSimpleQueryView";
+import {PageInfo} from "typescript_api_sdk/src/api/model/PageInfo";
+import {isArray} from "util";
 
 interface QueryStatus {
     loading: boolean;
@@ -61,6 +63,7 @@ export class SimpleQueryHelper<Q extends ApiQueryReq=any> {
 
         return query(this._req, rest, (p: Promise<any>) => {
             return p.then((data) => {
+                console.log("-------------data-----------", data)
                 this.unLockQueryStatus();
                 if (this.isPaging) {
                     //查询是否结束
@@ -114,8 +117,14 @@ export class SimpleQueryHelper<Q extends ApiQueryReq=any> {
         this._req.queryPage++;
     };
 
-    protected queryIsEnd = (data: Array<any>) => {
-        this.queryStatus.end = data.length > this._req.querySize;
+    protected queryIsEnd = (data: Array<any> | PageInfo<any>) => {
+        let len;
+        if (isArray(data)) {
+            len = data.length;
+        } else {
+            len = data.records.length;
+        }
+        this.queryStatus.end = len < this._req.querySize;
     };
 
 

@@ -1,11 +1,12 @@
 import {Reducer, Store} from "redux";
-import {isFunction, isNullOrUndefined, isUndefined} from "util";
+import {isFunction, isNullOrUndefined, isString, isUndefined} from "util";
 import {ReduxAction} from "./ReduxAction";
 import {addSagaHandler} from "./SagaManager";
 import {SagaHandler} from "./SagaHandler";
 import {convertFunctionNameByPrefix} from "./FindNameStragegy";
 import {go, goBack, goForward, push, replace, RouterAction} from "react-router-redux";
-import {LocationDescriptor, LocationState} from "history";
+import {LocationDescriptor, LocationDescriptorObject, LocationState} from "history";
+import {stringify} from "querystring";
 
 /*
 *
@@ -248,12 +249,21 @@ function proxyDispatchBySaga<T>(type: string, payload: T, pureAction: boolean): 
     });
 }
 
+export interface ViewLocationDescriptorObject extends LocationDescriptorObject {
+
+    params?: {};
+}
 
 /**
  * 路由持有者
  */
 export const routerHandler = {
-    push: (location: LocationDescriptor, state?: LocationState) => DEFAULT_STORE.dispatch(push(location, state)),
+    push: (location: ViewLocationDescriptorObject | string, state?: LocationState) => {
+        if (!isString(location)) {
+            location.search = stringify(location.params);
+        }
+        return DEFAULT_STORE.dispatch(push(location, state))
+    },
     replace: (location: LocationDescriptor, state?: LocationState) => DEFAULT_STORE.dispatch(replace(location, state)),
     go: (n: number) => DEFAULT_STORE.dispatch(go(n)),
     goBack: () => DEFAULT_STORE.dispatch(goBack()),

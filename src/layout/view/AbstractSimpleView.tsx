@@ -1,8 +1,6 @@
 import {SimpleView} from "./SimpleView";
 import React, {ErrorInfo} from "react";
 import FlexView from "../../components/view/FlexView";
-import {Layout} from "../Layout";
-// import {push} from "react-router-redux";
 import BrowserNavigatorFactory from "../../factory/navigator/web/BrowserNavigatorFactory";
 import "./view.less";
 import {LocationDescriptorObject} from "history";
@@ -10,8 +8,8 @@ import {stringify} from "querystring";
 import {ReduxRouterProps} from "../../model/redux/ReduxRouterProps";
 import {FormComponentProps} from "antd/lib/form/Form";
 import {isString} from "util";
+import {routerHandler} from "../../redux/ProxyReduxAction";
 
-const history = BrowserNavigatorFactory.get();
 
 export interface ViewProps extends ReduxRouterProps {
 
@@ -46,10 +44,6 @@ export interface ViewRenderHelper {
     renderHeader: (...p) => React.ReactNode;
 }
 
-export interface ViewLocationDescriptorObject extends LocationDescriptorObject {
-
-    params: {};
-}
 
 const viewBuilderStyle: React.CSSProperties = {
     position: "relative"
@@ -96,17 +90,9 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
     };
 
 
+    protected goBack = routerHandler.goBack;
 
-    protected goBack = history.goBack;
-
-    protected to = (location: ViewLocationDescriptorObject | string) => {
-
-        if (!isString(location)) {
-            location.search = stringify(location.params);
-        }
-
-        history.push(location as any);
-    };
+    protected to = routerHandler.push;
 
 
     private renderContent = () => <FlexView key={`${AbstractSimpleView.name}_flex_view`}
