@@ -48,7 +48,7 @@ export function createReduxHandler<T extends SagaHandler>(handler: T): T {
                 let isPureAction = !target[p].generatorFunction;
 
                 //分发
-                return proxyDispatchBySaga(`${handlerName}.${p}`, params[0], isPureAction);
+                return proxyDispatchBySaga(`${handlerName}.${p as string}`, params[0], isPureAction);
             }
         },
 
