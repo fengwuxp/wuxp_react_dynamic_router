@@ -62,7 +62,7 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
     /**
      * render helper
      */
-    // protected renderHelper: ViewRenderHelper;
+    protected renderHelper: ViewRenderHelper;
 
     constructor(props: P, context: any) {
         super(props, context);
