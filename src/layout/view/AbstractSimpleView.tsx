@@ -1,15 +1,16 @@
 import {SimpleView} from "./SimpleView";
 import React, {ErrorInfo} from "react";
 import FlexView from "../../components/view/FlexView";
-import BrowserNavigatorFactory from "../../factory/navigator/web/BrowserNavigatorFactory";
 import "./view.less";
-import {LocationDescriptorObject} from "history";
-import {stringify} from "querystring";
 import {ReduxRouterProps} from "../../model/redux/ReduxRouterProps";
 import {FormComponentProps} from "antd/lib/form/Form";
-import {isString} from "util";
 import {routerHandler} from "../../redux/ProxyReduxAction";
+import TimerTaskManager from "typescript_api_sdk/src/task/timer/TimerTaskManager";
+import {TimerHandler} from "typescript_api_sdk/src/task/timer/Timer";
+import TimerTask from "typescript_api_sdk/src/task/timer/TimerTask";
 
+//设置定时执行器
+TimerTask.setTimer(window);
 
 export interface ViewProps extends ReduxRouterProps {
 
@@ -53,6 +54,8 @@ const viewBuilderStyle: React.CSSProperties = {
     height: "100%"
 };
 
+
+
 /**
  * 基础的flex视图
  */
@@ -63,6 +66,14 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
      * render helper
      */
     protected renderHelper: ViewRenderHelper;
+
+
+    /**
+     * 定时任务管理者
+     * @type {TimerTaskManager}
+     */
+    protected timerTaskManager: TimerTaskManager = new TimerTaskManager();
+
 
     constructor(props: P, context: any) {
         super(props, context);
@@ -88,6 +99,37 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
         console.error("-------error-----", error);
         console.error("-------errorInfo-----", errorInfo)
     }
+
+    /**
+     * 组件被销毁钱调用
+     */
+    componentWillUnmount() {
+
+        //销毁所有的定时器
+        this.timerTaskManager.timerQueue.forEach((task) => {
+            console.log("废弃一个定时任务");
+            task.throwAway()
+        });
+
+    }
+
+    /**
+     * 创建一个执行一次的定时任务
+     * @param {TimerHandler} handler
+     * @param {number} timeout
+     */
+    protected newOnceTask = (handler: TimerHandler, timeout: number) => {
+        this.timerTaskManager.push(TimerTask.newOnceTask(handler, timeout));
+    };
+
+    /**
+     * 创建一个循环执行的定时任务
+     * @param {TimerHandler} handler
+     * @param {number} timeout
+     */
+    protected newLoopTask = (handler: TimerHandler, timeout: number) => {
+        this.timerTaskManager.push(TimerTask.newLoopTask(handler, timeout));
+    };
 
     /**
      * 渲染一个包装层，可以吧body包装起来
