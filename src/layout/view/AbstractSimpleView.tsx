@@ -8,6 +8,8 @@ import {routerHandler} from "../../redux/ProxyReduxAction";
 import TimerTaskManager from "typescript_api_sdk/src/task/timer/TimerTaskManager";
 import {TimerHandler} from "typescript_api_sdk/src/task/timer/Timer";
 import TimerTask from "typescript_api_sdk/src/task/timer/TimerTask";
+import ApiRequestTaskManager from "typescript_api_sdk/src/task/api/ApiRequestTaskManager";
+import {TaskManager} from "typescript_api_sdk/src/task/TaskManager";
 
 //设置定时执行器
 TimerTask.setTimer(window);
@@ -55,7 +57,6 @@ const viewBuilderStyle: React.CSSProperties = {
 };
 
 
-
 /**
  * 基础的flex视图
  */
@@ -70,9 +71,15 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
 
     /**
      * 定时任务管理者
-     * @type {TimerTaskManager}
+     * @type {TaskManager}
      */
-    protected timerTaskManager: TimerTaskManager = new TimerTaskManager();
+    protected timerTaskManager: TaskManager = new TimerTaskManager();
+
+    /**
+     * api请求任务管理者
+     * @type {ApiRequestTaskManager}
+     */
+    // protected apiTaskManager: ApiRequestTaskManager = new ApiRequestTaskManager();
 
 
     constructor(props: P, context: any) {
@@ -106,12 +113,25 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
     componentWillUnmount() {
 
         //销毁所有的定时器
-        this.timerTaskManager.timerQueue.forEach((task) => {
+        this.timerTaskManager.taskQueue.forEach((task) => {
             console.log("废弃一个定时任务");
             task.throwAway()
         });
 
     }
+
+    /**
+     * 返回
+     * @type {() => any}
+     */
+    goBack = routerHandler.goBack;
+
+    /**
+     * 跳转到某个视图
+     * @type {(location: (ViewLocationDescriptorObject | string), state?: LocationState) => any}
+     */
+    to = routerHandler.push;
+
 
     /**
      * 创建一个执行一次的定时任务
@@ -137,19 +157,6 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
      * @return {React.ReactNode}
      */
     protected renderWrapper = (children: React.ReactNode) => children;
-
-
-    /**
-     * 返回
-     * @type {() => any}
-     */
-    protected goBack = routerHandler.goBack;
-
-    /**
-     * 跳转到某个视图
-     * @type {(location: (ViewLocationDescriptorObject | string), state?: LocationState) => any}
-     */
-    protected to = routerHandler.push;
 
 
     /**
