@@ -1,5 +1,5 @@
 import {SagaHandler} from "../redux/SagaHandler";
-import {isNullOrUndefined, isObject} from "util";
+import {isArray, isNullOrUndefined, isObject} from "util";
 
 
 export interface HandlerConstructorOptions {
@@ -99,13 +99,20 @@ export function DefaultAction(): any {
 
         // console.log("---------target-------", target, name);
         target[name] = function (state: any, newState: any) {
-            if (isObject(state)) {
+            if (isArray(state)) {
+                //数组
+                return [
+                    ...state,
+                    ...newState
+                ]
+            } else if (isObject(state)) {
                 //对象
                 return {
                     ...state,
                     ...newState
                 };
             } else {
+                //基础数据类型
                 return newState;
             }
 
