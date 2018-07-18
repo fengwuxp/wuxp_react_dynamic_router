@@ -29,3 +29,12 @@ export interface SagaHandler<T=any> {
 
     // [key: string]: (...p) => ReduxAction<T>;
 }
+
+export type Props<P, K extends keyof P> = ((prevState: Readonly<P>) => (Pick<P, K> | P | null)) | (Pick<P, K> | P | null)
+
+export interface PropsHandler<P> {
+    setProps<K extends keyof P>(
+        state: Props<P, K>,
+        newState?: P
+    ): P
+}
