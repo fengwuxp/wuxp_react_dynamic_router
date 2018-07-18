@@ -1,5 +1,5 @@
 import {SagaHandler} from "../redux/SagaHandler";
-import {isNullOrUndefined} from "util";
+import {isArray, isNullOrUndefined, isObject} from "util";
 
 
 export interface HandlerConstructorOptions {
@@ -97,9 +97,20 @@ export function DefaultAction(): any {
 
     return function (target: SagaHandler, name: string, descriptor: PropertyDescriptor): any {
 
-        // console.log("---------target-------", target, name,action);
-        target[name] = function (sate: any, newState: any) {
-            return newState;
+        // console.log("---------target-------", target, name);
+        target[name] = function (state: any, newState: any) {
+            if (isArray(state)) {
+                return Object.assign(state,newState);
+            } else if (isObject(state)) {
+
+                return {
+                    ...state,
+                    ...newState
+                };
+            } else {
+                return newState;
+            }
+
         };
         addActionNameMaps(target, name, name);
 
