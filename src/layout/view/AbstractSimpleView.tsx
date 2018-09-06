@@ -164,7 +164,7 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
      * @return {React.ReactNode}
      */
     private renderContent = () => <FlexView key={`${AbstractSimpleView.name}_flex_view`}
-                                            className={"d_flex flex_cell flex_column"}
+                                            className={"d_flex app_root flex_column"}
                                             style={{...viewBuilderStyle, ...(this.state.containerStyle as object)}}
                                             header={this.renderHeader()}
                                             footer={this.renderFooter()}>{this.renderWrapper(this.renderBody())}</FlexView>

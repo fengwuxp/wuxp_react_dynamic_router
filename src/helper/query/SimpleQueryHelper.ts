@@ -28,7 +28,7 @@ export class SimpleQueryHelper<Q extends ApiQueryReq=any> {
      * 查询是否分页
      * @type {boolean}
      */
-    protected isPaging: boolean;
+    public isPaging: boolean;
 
     // protected queryQueue: Promise<any>[];
 

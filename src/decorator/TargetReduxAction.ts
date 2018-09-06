@@ -76,7 +76,11 @@ export function TargetAction(action: Function): any {
      */
     return function (target: SagaHandler, name: string, descriptor: PropertyDescriptor): any {
 
-        console.log("---------target-------", target, name, action);
+        // console.log("---------target-------", target, name, action);
+
+        // if (isNullOrUndefined(action.name) || action.name.trim().length === 0) {
+        //     return target;
+        // }
 
         addActionNameMaps(target, name, action.name);
 
@@ -97,10 +101,13 @@ export function DefaultAction(): any {
 
     return function (target: SagaHandler, name: string, descriptor: PropertyDescriptor): any {
 
-        // console.log("---------target-------", target, name);
+        // console.log("---------DefaultAction target-------", name);
         target[name] = function (state: any, newState: any) {
+            // console.log("----------name------->", state, newState);
             if (isArray(state)) {
-                return Object.assign(state,newState);
+                // return Object.assign(state, newState);
+                //如果是数组 则返回新的state
+                return newState;
             } else if (isObject(state)) {
 
                 return {
@@ -120,6 +127,7 @@ export function DefaultAction(): any {
 }
 
 function addActionNameMaps(target: SagaHandler, name: string, action: string) {
+    // console.log("-------action name--------->", action);
     if (isNullOrUndefined(target.actionNames)) {
         target.actionNames = new Map<string, string>();
     }
