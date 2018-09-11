@@ -45,7 +45,7 @@ export class SimpleQueryHelper<Q extends ApiQueryReq=any> {
 
     /**
      * 初始化
-     * @param {Q} req页
+     * @param req
      */
     initQuery = (req: Q) => {
         this._req = Object.assign({}, this.isPaging ? DEFAULT_QUERY_CONDITION : {}, req);

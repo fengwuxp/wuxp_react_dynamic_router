@@ -9,4 +9,6 @@ export interface NamedRouteConfig extends RouteConfig {
      * 视图名称
      */
     name?: string;
+
+    routes?: NamedRouteConfig[]
 }
