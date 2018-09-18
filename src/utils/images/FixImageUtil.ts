@@ -13,9 +13,10 @@ import {JPEGEncoder} from "./jpegEncoderBasic";
  * @create 2018-09-18 18:43
  * @param img
  * @param quality
+ * @param imageType
  * @return Promise<string>
  **/
-export function fixImage(img: HTMLImageElement, quality: number = 0.4): Promise<string> {
+export function fixImage(img: HTMLImageElement, quality: number = 0.4, imageType: string = "image/jpeg",): Promise<string> {
 
     const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
 
@@ -24,11 +25,12 @@ export function fixImage(img: HTMLImageElement, quality: number = 0.4): Promise<
         if (IS_ANDROID) {
             //安卓则进行图片修复
             let encoder = new JPEGEncoder();
-            let base64 = encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100);
-            resolve(base64);
+            // let base64 = encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100);
+            resolve(encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100));
 
         } else {
-            EXIF.getData(img.src, function () {
+            // console.log("ios修复图片角度")
+            EXIF.getData(img as any, function () {
                 //图片方向角
                 EXIF.getAllTags(this);
                 let orientation = EXIF.getTag(this, 'Orientation');
@@ -41,7 +43,8 @@ export function fixImage(img: HTMLImageElement, quality: number = 0.4): Promise<
                     quality,
                     orientation: orientation
                 });
-                let base64 = canvas.toDataURL("", quality,);
+                let base64 = canvas.toDataURL(imageType, quality,);
+                // console.log(base64);
                 resolve(base64);
             });
         }
