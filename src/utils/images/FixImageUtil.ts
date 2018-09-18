@@ -1,0 +1,47 @@
+import EXIF from "exif-js/exif";
+import {MegaPixImage} from "./MegapixImage";
+import {IS_ANDROID} from "../BrowserUtils";
+import {JPEGEncoder} from "./jpegEncoderBasic";
+
+/**
+ * 修复图片
+ * 处理ios等使用base64上传图片是出现角度转换的问题
+ * @author wxup
+ * @create 2018-09-18 18:43
+ * @param img
+ * @param quality
+ * @return Promise<string>
+ **/
+export function fixImage(img: HTMLImageElement, quality: number = 0.4): Promise<string> {
+
+    const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
+
+
+    return new Promise<string>((resolve, reject) => {
+        if (IS_ANDROID) {
+            let encoder = new JPEGEncoder();
+            let base64 = encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100);
+
+            resolve(base64);
+        } else {
+            EXIF.getData(img.src, function () {
+                //图片方向角
+                EXIF.getAllTags(this);
+                let orientation = EXIF.getTag(this, 'Orientation');
+
+                let mpImg = new MegaPixImage(img);
+                // console.log("img",img.width,img.height,quality);
+                mpImg.render(canvas, {
+                    maxWidth: img.width,
+                    maxHeight: img.height,
+                    quality,
+                    orientation: orientation
+                });
+                let base64 = canvas.toDataURL("", quality,);
+                resolve(base64);
+            });
+        }
+
+    })
+
+}

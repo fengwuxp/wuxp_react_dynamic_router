@@ -1,4 +1,6 @@
 /**
+ *
+ * git: https://github.com/stomita/ios-imagefile-megapixel
  * Mega pixel image rendering library for iOS6 Safari
  *
  * Fixes iOS6 Safari's image file rendering issue for large size image (over mega-pixel),
