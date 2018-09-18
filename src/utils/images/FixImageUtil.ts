@@ -5,7 +5,10 @@ import {JPEGEncoder} from "./jpegEncoderBasic";
 
 /**
  * 修复图片
- * 处理ios等使用base64上传图片是出现角度转换的问题
+ *
+ * 使用exif-js处理ios等使用base64上传图片时出现角度转换的问题
+ * git: https://github.com/exif-js/exif-js
+ *
  * @author wxup
  * @create 2018-09-18 18:43
  * @param img
@@ -16,13 +19,14 @@ export function fixImage(img: HTMLImageElement, quality: number = 0.4): Promise<
 
     const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
 
-
     return new Promise<string>((resolve, reject) => {
+
         if (IS_ANDROID) {
+            //安卓则进行图片修复
             let encoder = new JPEGEncoder();
             let base64 = encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100);
-
             resolve(base64);
+
         } else {
             EXIF.getData(img.src, function () {
                 //图片方向角
