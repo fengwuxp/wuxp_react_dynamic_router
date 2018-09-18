@@ -2,6 +2,9 @@ import EXIF from "exif-js/exif";
 import {MegaPixImage} from "./MegapixImage";
 import {IS_ANDROID} from "../BrowserUtils";
 import {JPEGEncoder} from "./jpegEncoderBasic";
+import {isFunction} from "util";
+
+const encoder = new JPEGEncoder();
 
 /**
  * 修复图片
@@ -19,14 +22,32 @@ import {JPEGEncoder} from "./jpegEncoderBasic";
 export function fixImage(img: HTMLImageElement, quality: number = 0.4, imageType: string = "image/jpeg",): Promise<string> {
 
     const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
+    const context = canvas.getContext('2d');
+
 
     return new Promise<string>((resolve, reject) => {
 
         if (IS_ANDROID) {
             //安卓则进行图片修复
-            let encoder = new JPEGEncoder();
-            // let base64 = encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100);
-            resolve(encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100));
+            if (img.complete) {
+                actionFn(resolve, encoder);
+            } else {
+                let oldLoad = img.onload;
+                img.onload = function (event) {
+                    if (isFunction(oldLoad)) {
+                        oldLoad.apply(img, event as any);
+                    }
+                    actionFn(resolve, encoder);
+                }
+            }
+
+            function actionFn(resolve, encoder) {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                context.drawImage(img, 0, 0);
+                resolve(encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100));
+            }
+
 
         } else {
             // console.log("ios修复图片角度")
