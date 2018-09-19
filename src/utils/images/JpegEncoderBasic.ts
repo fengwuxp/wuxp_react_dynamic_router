@@ -715,7 +715,7 @@ export function JPEGEncoder(quality?:number) {
         //
 
         return jpegDataUri
-    }
+    };
 
     function setQuality(quality){
         if (quality <= 0) {

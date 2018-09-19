@@ -24,11 +24,11 @@ export async function fixImage(data: HTMLImageElement | string, quality = 0.4): 
 
     const img = await convertImage(data);
 
-    const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
-
-    const context = canvas.getContext('2d');
 
     return new Promise<string>((resolve, reject) => {
+        const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
+
+        const context = canvas.getContext('2d');
 
         if (IS_ANDROID) {
             //安卓则进行图片修复
