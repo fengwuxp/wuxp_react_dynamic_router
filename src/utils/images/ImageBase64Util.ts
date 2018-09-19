@@ -44,7 +44,7 @@ export async function compressionImageToBase64(data: string | Blob | File | HTML
     }
 
     if (IS_MOBILE) {
-        console.log("修复图片");
+        console.log("移动端进行图片修复和压缩");
         //进行修复
         let img;
         if (data instanceof HTMLImageElement) {
@@ -56,27 +56,26 @@ export async function compressionImageToBase64(data: string | Blob | File | HTML
             img.src = dataURL;
         }
         dataURL = await fixImage(img, compression);
-    }
-
-
-    //获取图片类型
-    const array = dataURL.split(',');
-    const type = array[0].match(/:(.*?);/)[1];
-
-    return await new Promise<string>((resolve, reject) => {
-        dataURLToCanvas(dataURL).then((canvas) => {
+    } else {
+        console.log("非移动端尝试进行压缩图片");
+        //获取图片类型
+        const array = dataURL.split(',');
+        const type = array[0].match(/:(.*?);/)[1]; //"image/jpeg"
+        dataURL = await dataURLToCanvas(dataURL).then((canvas) => {
             let result: string;
             if (isFunction(canvas.toDataURL)) {
                 console.log("图片压缩比例", compression);
                 //支持 图片压缩
-                result = canvas.toDataURL(type, compression);
+                return canvas.toDataURL(type, compression);
             } else {
                 //不支持图片压缩
                 result = dataURL;
             }
-            resolve(result)
-        }).catch(reject);
-    });
+            return result;
+        });
+    }
+
+    return dataURL;
 
 }
 

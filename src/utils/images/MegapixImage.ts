@@ -10,6 +10,8 @@
  * Copyright (c) 2012 Shinichi Tomita <shinichi.tomita@gmail.com>
  * Released under the MIT license
  */
+import {IMAGE_TYPE_JPEG} from "./Const";
+
 const webkitURL = window['webkitURL'];
 
 /**
@@ -70,7 +72,7 @@ function detectVerticalSquash(img, iw, ih) {
 function renderImageToDataURL(img, options, doSquash) {
     let canvas = document.createElement('canvas');
     renderImageToCanvas(img, canvas, options, doSquash);
-    return canvas.toDataURL("image/jpeg", options.quality || 0.8);
+    return canvas.toDataURL(IMAGE_TYPE_JPEG, options.quality || 0.8);
 }
 
 /**
@@ -221,7 +223,7 @@ MegaPixImage.prototype.render = function (target, options, callback) {
     let imgWidth = this.srcImage.naturalWidth, imgHeight = this.srcImage.naturalHeight,
         width = options.width, height = options.height,
         maxWidth = options.maxWidth, maxHeight = options.maxHeight,
-        doSquash = !this.blob || this.blob.type === 'image/jpeg';
+        doSquash = !this.blob || this.blob.type === IMAGE_TYPE_JPEG;
     if (width && !height) {
         height = (imgHeight * width / imgWidth) << 0;
     } else if (height && !width) {
