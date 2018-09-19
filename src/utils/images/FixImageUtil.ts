@@ -17,10 +17,10 @@ const encoder = new JPEGEncoder();
  * @create 2018-09-18 18:43
  * @param data
  * @param quality 默认为0.4
-
+ * @param orientation 角度 see: https://github.com/exif-js/exif-js
  * @return Promise<string>
  **/
-export async function fixImage(data: HTMLImageElement | string, quality = 0.4): Promise<string> {
+export async function fixImage(data: HTMLImageElement | string, quality = 0.4, orientation: number = null): Promise<string> {
 
     const img = await convertImage(data);
 
@@ -29,6 +29,12 @@ export async function fixImage(data: HTMLImageElement | string, quality = 0.4): 
         const canvas: HTMLCanvasElement = document.createElement('canvas') as HTMLCanvasElement;
 
         const context = canvas.getContext('2d');
+
+
+        if (orientation != null) {
+            resolve(rotateImage(img, canvas, orientation, quality));
+            return;
+        }
 
         if (IS_ANDROID) {
             //安卓则进行图片修复
@@ -52,31 +58,33 @@ export async function fixImage(data: HTMLImageElement | string, quality = 0.4): 
                 resolve(encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100));
             }
 
-
         } else {
             // console.log("ios修复图片角度")
             EXIF.getData(img as any, function () {
                 //图片方向角
                 EXIF.getAllTags(this);
-                let orientation = EXIF.getTag(this, 'Orientation');
+                const orientation = EXIF.getTag(this, 'Orientation');
 
-                let mpImg = new MegaPixImage(img);
-                // console.log("img",img.width,img.height,quality);
-                //将图片render到canvas中
-                mpImg.render(canvas, {
-                    maxWidth: img.width,
-                    maxHeight: img.height,
-                    quality,
-                    orientation: orientation
-                });
-                let base64 = canvas.toDataURL(IMAGE_TYPE_JPEG, quality,);
                 // console.log(base64);
-                resolve(base64);
+                resolve(rotateImage(img, canvas, orientation, quality));
             });
         }
-
     })
 
+}
+
+
+function rotateImage(img, canvas, orientation, quality) {
+    let mpImg = new MegaPixImage(img);
+    // console.log("img",img.width,img.height,quality);
+    //将图片render到canvas中
+    mpImg.render(canvas, {
+        maxWidth: img.width,
+        maxHeight: img.height,
+        quality,
+        orientation
+    });
+    return canvas.toDataURL(IMAGE_TYPE_JPEG, quality,);
 }
 
 

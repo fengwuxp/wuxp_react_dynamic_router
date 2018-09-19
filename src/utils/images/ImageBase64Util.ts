@@ -13,7 +13,12 @@ interface CompressionImageOptions {
     targetSize?: number;
 
     //图片大小
-    size?: number,
+    size?: number;
+
+    /**
+     * 图片旋转的角度
+     */
+    orientation?:number;
 
 
 }
@@ -24,9 +29,10 @@ interface CompressionImageOptions {
  * @param {CompressionImageOptions} options
  * @return {Promise<string>} 返回不带 data:image/jpg;base64, 前缀的base64编码的字符串
  */
-export async function compressionImageToBase64(data: string | Blob | File | HTMLImageElement, options: CompressionImageOptions): Promise<string> {
+export async function compressionImageToBase64(data: string | Blob | File | HTMLImageElement,
+                                               options: CompressionImageOptions): Promise<string> {
 
-    let {compression, targetSize, size} = options;
+    let {compression, targetSize, size,orientation} = options;
 
     if (isNullOrUndefined(compression)) {
         //计算压缩比例
@@ -55,7 +61,7 @@ export async function compressionImageToBase64(data: string | Blob | File | HTML
             // }
             img.src = dataURL;
         }
-        dataURL = await fixImage(img, compression);
+        dataURL = await fixImage(img, compression,orientation);
     } else {
         console.log("非移动端尝试进行压缩图片");
         //获取图片类型
