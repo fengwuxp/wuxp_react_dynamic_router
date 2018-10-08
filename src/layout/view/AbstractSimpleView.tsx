@@ -3,13 +3,13 @@ import React, {ErrorInfo} from "react";
 import FlexView from "../../components/view/FlexView";
 import "./view.less";
 import {ReduxRouterProps} from "../../model/redux/ReduxRouterProps";
-import {FormComponentProps} from "antd/lib/form/Form";
 import {routerHandler} from "../../redux/ProxyReduxAction";
 import TimerTaskManager from "typescript_api_sdk/src/task/timer/TimerTaskManager";
 import {TimerHandler} from "typescript_api_sdk/src/task/timer/Timer";
 import TimerTask from "typescript_api_sdk/src/task/timer/TimerTask";
 import ApiRequestTaskManager from "typescript_api_sdk/src/task/api/ApiRequestTaskManager";
 import {TaskManager} from "typescript_api_sdk/src/task/TaskManager";
+import {FormComponentProps} from "../../../types/FormComponentProps";
 
 //设置定时执行器
 TimerTask.setTimer(window as any);

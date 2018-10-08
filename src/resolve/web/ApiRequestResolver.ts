@@ -6,7 +6,7 @@ import message from 'antd/lib/message';
 
 
 //fetch
-const apiClientFetch = new ApiClientFetch(false);
+const apiClientFetch = new ApiClientFetch(null, null);
 
 /**
  * api 请求解析
