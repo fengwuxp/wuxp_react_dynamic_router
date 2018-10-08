@@ -12,7 +12,7 @@ import ApiRequestTaskManager from "typescript_api_sdk/src/task/api/ApiRequestTas
 import {TaskManager} from "typescript_api_sdk/src/task/TaskManager";
 
 //设置定时执行器
-TimerTask.setTimer(window);
+TimerTask.setTimer(window as any);
 
 export interface ViewProps extends ReduxRouterProps {
 
