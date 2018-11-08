@@ -97,7 +97,7 @@ export const USE_NEW_SATE: string = "__USE_NEW_SATE__";
 
 function addAction(actions, handlerName, key, handle, handlerPrototype, handler: SagaHandler) {
     actions[`${handlerName}.${key}`] = handle;
-    if (key.startsWith("set")) {
+    if (key!=null && key.toString().startsWith("set")) {
         let getFuncName = convertFunctionNameByPrefix(key);
         if (getFuncName in handlerPrototype) {
             handler.actionNames.set(getFuncName, key);
