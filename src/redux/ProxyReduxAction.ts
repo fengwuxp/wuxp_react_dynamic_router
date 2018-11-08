@@ -39,28 +39,50 @@ export function createReduxHandler<T extends SagaHandler>(handler: T): T {
 
     const handlerName = handler.constructorName || handler.constructor.name;
 
-    const proxyHandler: ProxyHandler<T> = {
+    // const proxyHandler: ProxyHandler<T> = {
+    //
+    //     get(target: T, p: PropertyKey, receiver: any): any {
+    //
+    //         return function (...params) {
+    //
+    //             let isPureAction = !target[p].generatorFunction;
+    //
+    //             //分发
+    //             return proxyDispatchBySaga(`${handlerName}.${p as string}`, params[0], isPureAction);
+    //         }
+    //     },
+    //
+    //     set(target: T, p: PropertyKey, value: any, receiver: any): boolean {
+    //         // throw new Error("禁止给handler动态添加方法");
+    //         return true;
+    //     }
+    // };
+    //
+    //
+    // return new Proxy(handler, proxyHandler);
 
-        get(target: T, p: PropertyKey, receiver: any): any {
-
-            return function (...params) {
-
-                let isPureAction = !target[p].generatorFunction;
-
-                //分发
-                return proxyDispatchBySaga(`${handlerName}.${p as string}`, params[0], isPureAction);
-            }
-        },
-
-        set(target: T, p: PropertyKey, value: any, receiver: any): boolean {
-            // throw new Error("禁止给handler动态添加方法");
-            return true;
+    //为了兼容ios8使用es5低版本的代理
+    const proxy: T = {} as T;
+    for (const key in handler) {
+        if (!isFunction(handler[key])) {
+            continue;
         }
-    };
+        Object.defineProperty(proxy, key, {
+            set: function (val) {
+                // throw new Error("禁止给handler动态添加方法");
+                return true;
+            },
+            get: function () {
+                return function (...params) {
+                    let isPureAction = !(handler[key] as any).generatorFunction;
 
-
-    return new Proxy(handler, proxyHandler);
-
+                    //分发
+                    return proxyDispatchBySaga(`${handlerName}.${key as string}`, params[0], isPureAction);
+                }
+            }
+        });
+    }
+    return proxy;
 }
 
 
@@ -97,7 +119,7 @@ export const USE_NEW_SATE: string = "__USE_NEW_SATE__";
 
 function addAction(actions, handlerName, key, handle, handlerPrototype, handler: SagaHandler) {
     actions[`${handlerName}.${key}`] = handle;
-    if (key!=null && key.toString().startsWith("set")) {
+    if (key != null && key.indexOf("set") === 0) {
         let getFuncName = convertFunctionNameByPrefix(key);
         if (getFuncName in handlerPrototype) {
             handler.actionNames.set(getFuncName, key);

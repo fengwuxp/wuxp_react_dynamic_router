@@ -39,24 +39,17 @@ export async function fixImage(data: HTMLImageElement | string, quality = 0.4, o
         if (IS_ANDROID) {
             //安卓则进行图片修复
             if (img.complete) {
-                actionFn(resolve, encoder);
+                actionFn(resolve, encoder,canvas,context,img,quality);
             } else {
                 let oldLoad = img.onload;
                 img.onload = function (event) {
                     if (isFunction(oldLoad)) {
                         oldLoad.apply(img, event as any);
                     }
-                    actionFn(resolve, encoder);
+                    actionFn(resolve, encoder,canvas,context,img,quality);
                 }
             }
 
-            function actionFn(resolve, encoder) {
-                canvas.width = img.width;
-                canvas.height = img.height;
-                context.drawImage(img, 0, 0);
-                //进行图片修复，压缩
-                resolve(encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100));
-            }
 
         } else {
             // console.log("ios修复图片角度")
@@ -69,8 +62,18 @@ export async function fixImage(data: HTMLImageElement | string, quality = 0.4, o
                 resolve(rotateImage(img, canvas, orientation, quality));
             });
         }
-    })
+    });
 
+
+}
+
+
+function actionFn(resolve, encoder,canvas,context,img,quality) {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    context.drawImage(img, 0, 0);
+    //进行图片修复，压缩
+    resolve(encoder.encode(canvas.getContext('2d').getImageData(0, 0, img.width, img.height), quality * 100));
 }
 
 
