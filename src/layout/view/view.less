@@ -1,11 +1,6 @@
 /*--- 弹性盒模型 ---*/
 .d_flex {
-  display: -webkit-box !important;
-  display: -webkit-flex !important;
-  display: -ms-flexbox !important;
   display: flex !important;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 
@@ -18,10 +13,12 @@
 
 .flex_row {
   flex-direction: row;
+  -webkit-flex-direction: row !important;
 }
 
 .flex_column {
   flex-direction: column;
+  -webkit-flex-direction: column !important;
 }
 
 .flex_center {

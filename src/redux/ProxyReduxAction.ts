@@ -286,7 +286,12 @@ export const routerHandler = {
         }
         return DEFAULT_STORE.dispatch(push(location, state))
     },
-    replace: (location: LocationDescriptor, state?: LocationState) => DEFAULT_STORE.dispatch(replace(location, state)),
+    replace: (location: ViewLocationDescriptorObject, state?: LocationState) => {
+        if (!isString(location)) {
+            location.search = stringify(location.params);
+        }
+        return DEFAULT_STORE.dispatch(replace(location, state))
+    },
     go: (n: number) => DEFAULT_STORE.dispatch(go(n)),
     goBack: () => DEFAULT_STORE.dispatch(goBack()),
     goForward: () => DEFAULT_STORE.dispatch(goForward()),

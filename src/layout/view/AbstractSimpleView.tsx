@@ -132,6 +132,10 @@ export default abstract class AbstractSimpleView<P extends ViewProps, S extends 
      */
     to = routerHandler.push;
 
+    /**
+     * 替换某个视图
+     */
+    replace = routerHandler.replace;
 
     /**
      * 创建一个执行一次的定时任务
