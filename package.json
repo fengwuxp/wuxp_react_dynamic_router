@@ -8,6 +8,9 @@
   "main": "index.js",
   "author": "fengwuxp",
   "license": "ISC",
+  "scripts":{
+    "npm_pulish": "npm publish"
+  },
   "dependencies": {
     "classnames": "^2.2.6",
     "exif-js": "^2.3.0"
