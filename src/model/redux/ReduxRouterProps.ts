@@ -1,21 +1,21 @@
 import {History, Location} from "history";
 import {match} from "react-router";
-import {Dispatch} from "react-redux";
+import {Dispatch} from "redux";
 
 /**
  * redux react-router-redux 会分发到子组件的props
  */
-export interface ReduxRouterProps<S = any> {
+export interface ReduxRouterProps {
 
 
-    dispatch?: Dispatch<S>;
+    dispatch?: Dispatch<any>;
 
-    location?: Location,
+    location?: Location;
 
-    history?: History,
+    history?: History;
 
     //匹配
-    match?: match<any>,
+    match?: match<any>;
 
 
 }

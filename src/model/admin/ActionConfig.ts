@@ -9,12 +9,12 @@ export interface PromptData {
     /**
      * 动作标题
      */
-    title: string
+    title: string;
 
     /**
      * 提示内容
      */
-    content: string
+    content: string;
 
     /**
      * 提示类型
